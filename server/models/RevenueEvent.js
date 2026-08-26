@@ -1,6 +1,11 @@
 import mongoose from 'mongoose';
 
 const revenueEventSchema = new mongoose.Schema({
+  accountId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User',
+    default: null
+  },
   type: {
     type: String,
     enum: ['payment_failed', 'cart_abandoned', 'subscription_failed', 'invoice_overdue'],

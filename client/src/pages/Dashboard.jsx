@@ -39,7 +39,7 @@ export const Dashboard = ({ onSelectCase, onNavigate }) => {
     return (
       <div className="p-12 text-center font-mono text-[#5A6578]">
         <div className="animate-spin inline-block w-8 h-8 border-4 border-[#D9383A] border-t-transparent rounded-full mb-4"></div>
-        <p>Loading Wapas AI Revenue Ledger...</p>
+        <p>Loading Revive AI Revenue Ledger...</p>
       </div>
     );
   }
@@ -79,7 +79,7 @@ export const Dashboard = ({ onSelectCase, onNavigate }) => {
 
         {/* Rubber stamp watermark */}
         <div className="absolute right-4 bottom-2 opacity-15 pointer-events-none transform rotate-12">
-          <span className="rubber-stamp stamp-recovered text-6xl">WAPAS RECOVERED</span>
+          <span className="rubber-stamp stamp-recovered text-6xl">REVIVE RECOVERED</span>
         </div>
       </div>
 
@@ -132,13 +132,13 @@ export const Dashboard = ({ onSelectCase, onNavigate }) => {
             <div>
               <div className="flex items-center space-x-2 text-[#C67D0A] font-mono text-xs font-bold uppercase mb-1">
                 <Zap className="w-4 h-4" />
-                <span>BENCHMARK PROOF: RULES-ONLY VS WAPAS AI AGENT</span>
+                <span>BENCHMARK PROOF: RULES-ONLY VS REVIVE AI AGENT</span>
               </div>
               <h4 className="font-serif font-bold text-xl text-[#0F2042]">
-                Wapas AI Agent recovers <span className="text-[#1E7E45]">+{comparison.liftPct}% more revenue</span> than standard rule engines.
+                Revive AI Agent recovers <span className="text-[#1E7E45]">+{comparison.liftPct}% more revenue</span> than standard rule engines.
               </h4>
               <p className="font-mono text-xs text-[#5A6578] mt-1">
-                Rules-Only Baseline: {comparison.rulesOnly?.recoveryRatePct}% recovery · Wapas AI Agent: {comparison.wapasAgent?.recoveryRatePct}% recovery
+                Rules-Only Baseline: {comparison.rulesOnly?.recoveryRatePct}% recovery · Revive AI Agent: {comparison.wapasAgent?.recoveryRatePct}% recovery
               </p>
             </div>
 

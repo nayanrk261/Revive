@@ -14,11 +14,13 @@ if (process.env.OPENAI_API_KEY || process.env.OPENROUTER_API_KEY) {
 }
 
 /**
- * Intelligent Multi-Step Agent Analysis Engine
+ * Intelligent Multi-Step Agent Analysis Engine (Revive)
  */
 export const runAgentAnalysis = async (caseId) => {
   const recCase = await RecoveryCase.findById(caseId);
   if (!recCase) throw new Error('RecoveryCase not found');
+
+  const accountId = recCase.accountId || null;
 
   // Step 1: Execute initial tool calls (get_event, get_customer)
   const eventData = await executeToolCall('get_event', { eventId: recCase.eventId.toString() });
@@ -26,6 +28,7 @@ export const runAgentAnalysis = async (caseId) => {
 
   // Log audit action for tool calls
   await AgentAction.create({
+    accountId,
     caseId: recCase._id,
     tool: 'get_event & get_customer',
     action: 'GATHER_CONTEXT',
@@ -38,6 +41,7 @@ export const runAgentAnalysis = async (caseId) => {
   const attemptsData = await executeToolCall('get_prior_attempts', { caseId: recCase._id.toString() });
 
   await AgentAction.create({
+    accountId,
     caseId: recCase._id,
     tool: 'get_payment_history & get_prior_attempts',
     action: 'GATHER_HISTORY',
@@ -53,7 +57,7 @@ export const runAgentAnalysis = async (caseId) => {
       const messages = [
         {
           role: 'system',
-          content: `You are Wapas AI Revenue Recovery Agent. Analyze the revenue event and customer history data provided, and produce a structured JSON decision.
+          content: `You are Revive AI Revenue Recovery Agent. Analyze the revenue event and customer history data provided, and produce a structured JSON decision.
 Available event types: payment_failed, cart_abandoned, subscription_failed, invoice_overdue.
 Your task: Evaluate risk, calculate recovery probability (0.0 - 1.0), pick recommended action (SEND_REMINDER, RETRY_PAYMENT, ESCALATE, WAIT, CLOSE), select tone (soft, medium, firm), and select channel (sms, whatsapp, email).
 You MUST provide a plain-language explanation in 'reason' referencing actual data values (amount, reliability, age, failure reason). Return ONLY JSON matching schema.`
@@ -178,6 +182,7 @@ You MUST provide a plain-language explanation in 'reason' referencing actual dat
 
   // Log final analysis action
   await AgentAction.create({
+    accountId,
     caseId: recCase._id,
     tool: 'agent_analysis_loop',
     action: `RECOMMEND_${decisionResult.recommendedAction}`,

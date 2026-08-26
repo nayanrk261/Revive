@@ -1,6 +1,11 @@
 import mongoose from 'mongoose';
 
 const customerSchema = new mongoose.Schema({
+  accountId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User',
+    default: null
+  },
   name: { type: String, required: true },
   phone: { type: String, required: true },
   email: { type: String, required: true },

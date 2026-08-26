@@ -1,6 +1,11 @@
 import mongoose from 'mongoose';
 
 const agentActionSchema = new mongoose.Schema({
+  accountId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User',
+    default: null
+  },
   caseId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'RecoveryCase',

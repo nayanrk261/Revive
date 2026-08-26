@@ -6,11 +6,12 @@ import { RevenueEvent } from '../models/RevenueEvent.js';
 import { Customer } from '../models/Customer.js';
 import { executeToolCall } from '../services/agentTools.js';
 import { checkGuardrails } from '../services/guardrails.js';
+import { requireAuth } from '../middleware/authMiddleware.js';
 
 const router = express.Router();
 
 // POST /api/agent/analyze/:caseId -> Run the agent analysis loop on a case
-router.post('/analyze/:caseId', async (req, res) => {
+router.post('/analyze/:caseId', requireAuth, async (req, res) => {
   try {
     const analysis = await runAgentAnalysis(req.params.caseId);
     const updatedCase = await RecoveryCase.findById(req.params.caseId)
@@ -27,10 +28,11 @@ router.post('/analyze/:caseId', async (req, res) => {
   }
 });
 
-// POST /api/agent/process-batch -> Process all open cases in batch
-router.post('/process-batch', async (req, res) => {
+// POST /api/agent/process-batch -> Process open cases in batch for current account
+router.post('/process-batch', requireAuth, async (req, res) => {
   try {
-    const openCases = await RecoveryCase.find({ status: 'open' }).limit(50);
+    const accountId = req.user ? req.user._id : null;
+    const openCases = await RecoveryCase.find({ accountId, status: 'open' }).limit(50);
     const results = [];
 
     for (const c of openCases) {
@@ -87,9 +89,10 @@ router.post('/process-batch', async (req, res) => {
 });
 
 // POST /api/agent/compare-baseline -> Run baseline vs agent comparison engine
-router.post('/compare-baseline', async (req, res) => {
+router.post('/compare-baseline', requireAuth, async (req, res) => {
   try {
-    const comparison = await compareBaselineAndAgent();
+    const accountId = req.user ? req.user._id : null;
+    const comparison = await compareBaselineAndAgent(accountId);
     res.json({
       success: true,
       comparison

@@ -54,10 +54,10 @@ export const BatchComparison = () => {
             <span>PITCH BENCHMARK PROOF</span>
           </div>
           <h2 className="font-serif font-extrabold text-2xl text-[#0F2042]">
-            RULES-ONLY BASELINE VS WAPAS AI AGENT
+            RULES-ONLY BASELINE VS REVIVE AI AGENT
           </h2>
           <p className="font-mono text-xs text-[#5A6578]">
-            Proves Wapas agent adds true recovery lift compared to standard static rules engines.
+            Proves Revive agent adds true recovery lift compared to standard static rules engines.
           </p>
         </div>
 
@@ -85,7 +85,7 @@ export const BatchComparison = () => {
       {loading ? (
         <div className="p-12 text-center font-mono text-[#5A6578]">
           <div className="animate-spin inline-block w-8 h-8 border-4 border-[#D9383A] border-t-transparent rounded-full mb-4"></div>
-          <p>Evaluating 150 synthetic cases across both engines...</p>
+          <p>Evaluating revenue recovery cases across both engines...</p>
         </div>
       ) : data ? (
         <>
@@ -115,11 +115,11 @@ export const BatchComparison = () => {
               </div>
             </div>
 
-            {/* Wapas AI Agent Card */}
+            {/* Revive AI Agent Card */}
             <div className="ledger-card p-6 rounded-lg border-2 border-[#1E7E45] bg-[#EBF7F0] shadow-md flex flex-col justify-between relative overflow-hidden">
               <div>
                 <div className="flex justify-between items-start mb-3">
-                  <span className="font-mono text-xs font-bold text-[#1E7E45] uppercase">2. WAPAS AI AGENT</span>
+                  <span className="font-mono text-xs font-bold text-[#1E7E45] uppercase">2. REVIVE AI AGENT</span>
                   <Zap className="w-5 h-5 text-[#1E7E45]" />
                 </div>
                 <div className="font-serif italic text-xs text-[#1E7E45] mb-4">

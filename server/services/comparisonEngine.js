@@ -2,15 +2,13 @@ import { RecoveryCase } from '../models/RecoveryCase.js';
 import { RevenueEvent } from '../models/RevenueEvent.js';
 import { Customer } from '../models/Customer.js';
 import { evaluateRulesBaseline } from './riskEngine.js';
-import { runAgentAnalysis } from './agent.js';
-import { checkGuardrails } from './guardrails.js';
 
 /**
  * Batch Comparison Processor
- * Runs Rules-Only Baseline vs Wapas AI Agent on open cases.
+ * Runs Rules-Only Baseline vs Revive AI Agent on open cases.
  */
-export const compareBaselineAndAgent = async () => {
-  const cases = await RecoveryCase.find({}).populate('eventId customerId').limit(150);
+export const compareBaselineAndAgent = async (accountId = null) => {
+  const cases = await RecoveryCase.find({ accountId }).populate('eventId customerId').limit(150);
 
   let rulesStats = {
     totalCases: cases.length,
@@ -45,7 +43,6 @@ export const compareBaselineAndAgent = async () => {
     if (rulesResult.action === 'ESCALATE') {
       rulesStats.escalatedCount += 1;
     } else {
-      // Dumb formula: 1 generic reminder, flat low conversion rate (~20-25%)
       const rulesSuccessProb = reliability * 0.28;
       if (Math.random() < rulesSuccessProb) {
         rulesStats.recoveredCount += 1;
@@ -55,10 +52,8 @@ export const compareBaselineAndAgent = async () => {
       }
     }
 
-    // 2. Wapas AI Agent Evaluation
+    // 2. Revive AI Agent Evaluation
     let agentSuccessProb = 0;
-
-    // Dynamic recovery probability based on tone, channel, type, reliability, risk score
     const riskFactor = (100 - c.riskScore) / 100;
     const toneMultiplier = c.attempts === 0 ? 1.1 : (c.attempts === 1 ? 1.25 : 0.95);
     const typeMultiplier = type === 'payment_failed' ? 1.3 : (type === 'subscription_failed' ? 1.2 : 0.9);
@@ -82,6 +77,7 @@ export const compareBaselineAndAgent = async () => {
     casesProcessed: cases.length,
     rulesOnly: rulesStats,
     wapasAgent: agentStats,
+    reviveAgent: agentStats,
     liftPct: parseFloat((agentStats.recoveryRatePct - rulesStats.recoveryRatePct).toFixed(1)),
     additionalRevenueRecovered: agentStats.recoveredAmount - rulesStats.recoveredAmount
   };

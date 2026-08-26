@@ -1,14 +1,16 @@
 import express from 'express';
 import { RevenueEvent } from '../models/RevenueEvent.js';
 import { RecoveryCase } from '../models/RecoveryCase.js';
+import { requireAuth } from '../middleware/authMiddleware.js';
 
 const router = express.Router();
 
-router.get('/', async (req, res) => {
+router.get('/', requireAuth, async (req, res) => {
   try {
     const { type, status, limit = 100 } = req.query;
+    const accountId = req.user ? req.user._id : null;
 
-    const query = {};
+    const query = { accountId };
     if (type) query.type = type;
     if (status) query.status = status;
 

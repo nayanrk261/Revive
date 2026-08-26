@@ -6,11 +6,12 @@ import { AgentAction } from '../models/AgentAction.js';
 import { Payment } from '../models/Payment.js';
 import { checkGuardrails } from '../services/guardrails.js';
 import { executeToolCall } from '../services/agentTools.js';
+import { requireAuth } from '../middleware/authMiddleware.js';
 
 const router = express.Router();
 
 // GET /api/recovery/:caseId -> Full case details
-router.get('/:caseId', async (req, res) => {
+router.get('/:caseId', requireAuth, async (req, res) => {
   try {
     const recCase = await RecoveryCase.findById(req.params.caseId)
       .populate('eventId')
@@ -35,7 +36,7 @@ router.get('/:caseId', async (req, res) => {
 });
 
 // POST /api/recovery/:caseId/execute -> Execute recommended action with guardrail verification
-router.post('/:caseId/execute', async (req, res) => {
+router.post('/:caseId/execute', requireAuth, async (req, res) => {
   try {
     const recCase = await RecoveryCase.findById(req.params.caseId);
     if (!recCase) return res.status(404).json({ success: false, error: 'Case not found' });
@@ -51,6 +52,7 @@ router.post('/:caseId/execute', async (req, res) => {
     if (!guardrailCheck.allowed) {
       // Log guardrail intervention
       await AgentAction.create({
+        accountId: recCase.accountId || null,
         caseId: recCase._id,
         tool: 'backend_guardrails',
         action: `GUARDRAIL_OVERRIDE_${guardrailCheck.overriddenAction}`,
@@ -106,7 +108,7 @@ router.post('/:caseId/execute', async (req, res) => {
 });
 
 // POST /api/recovery/:caseId/payment -> Simulate payment received
-router.post('/:caseId/payment', async (req, res) => {
+router.post('/:caseId/payment', requireAuth, async (req, res) => {
   try {
     const recCase = await RecoveryCase.findById(req.params.caseId);
     if (!recCase) return res.status(404).json({ success: false, error: 'Case not found' });
@@ -117,6 +119,7 @@ router.post('/:caseId/payment', async (req, res) => {
 
     // Create payment record
     const payment = await Payment.create({
+      accountId: recCase.accountId || null,
       eventId: event._id,
       amount,
       receivedAt: new Date(),
@@ -133,6 +136,7 @@ router.post('/:caseId/payment', async (req, res) => {
 
     // Log action
     await AgentAction.create({
+      accountId: recCase.accountId || null,
       caseId: recCase._id,
       tool: 'simulate_payment',
       action: 'PAYMENT_RECEIVED',
@@ -160,7 +164,7 @@ router.post('/:caseId/payment', async (req, res) => {
 });
 
 // POST /api/recovery/:caseId/escalate -> Manually escalate case
-router.post('/:caseId/escalate', async (req, res) => {
+router.post('/:caseId/escalate', requireAuth, async (req, res) => {
   try {
     const recCase = await RecoveryCase.findById(req.params.caseId);
     if (!recCase) return res.status(404).json({ success: false, error: 'Case not found' });
@@ -181,7 +185,7 @@ router.post('/:caseId/escalate', async (req, res) => {
 });
 
 // GET /api/recovery/:caseId/activity -> Full audit trail of AgentAction
-router.get('/:caseId/activity', async (req, res) => {
+router.get('/:caseId/activity', requireAuth, async (req, res) => {
   try {
     const actions = await AgentAction.find({ caseId: req.params.caseId }).sort({ timestamp: -1 });
     res.json({

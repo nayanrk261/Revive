@@ -1,6 +1,11 @@
 import mongoose from 'mongoose';
 
 const recoveryCaseSchema = new mongoose.Schema({
+  accountId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User',
+    default: null
+  },
   eventId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'RevenueEvent',
