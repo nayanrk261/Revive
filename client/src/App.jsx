@@ -7,12 +7,20 @@ import { RecoveryQueue } from './pages/RecoveryQueue';
 import { CaseDetail } from './pages/CaseDetail';
 import { BatchComparison } from './pages/BatchComparison';
 import { OnboardingModal } from './components/OnboardingModal';
+import { PublicPaymentPage } from './pages/PublicPaymentPage';
 
 function MainApp() {
   const { user, demoMode, loading } = useAuth();
   const [activeTab, setActiveTab] = useState('dashboard');
   const [selectedCaseId, setSelectedCaseId] = useState(null);
   const [showAuthPage, setShowAuthPage] = useState(false);
+
+  // Check if current URL is a public customer payment link (/pay/:eventId)
+  const pathname = window.location.pathname;
+  if (pathname.startsWith('/pay/')) {
+    const eventId = pathname.split('/pay/')[1];
+    return <PublicPaymentPage eventId={eventId} />;
+  }
 
   if (loading) {
     return (

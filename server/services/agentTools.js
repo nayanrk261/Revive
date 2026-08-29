@@ -14,44 +14,46 @@ import { sendTelegramMessage } from './telegramService.js';
 export const generateHinglishMessage = (event, customer, tone = 'soft') => {
   const name = customer.name.split(' ')[0] || 'Customer';
   const amountStr = `₹${event.amount.toLocaleString('en-IN')}`;
+  const baseUrl = (process.env.CLIENT_URL || 'http://localhost:5173').replace(/\/+$/, '');
+  const payLink = `${baseUrl}/pay/${event._id}`;
 
   if (event.type === 'payment_failed') {
     if (tone === 'soft') {
-      return `Arre ${name}, aapka ${amountStr} ka payment complete nahi ho paaya — koi baat nahi, aap is link se 30 second mein phir try kar lo: https://pay.revive.in/pay/${event._id}`;
+      return `Arre ${name}, aapka ${amountStr} ka payment complete nahi ho paaya — koi baat nahi, aap is link se 30 second mein phir try kar lo: ${payLink}`;
     } else if (tone === 'medium') {
-      return `Hi ${name}, aapka ${amountStr} ka payment abhi bhi incomplete status par hai. Gateway attempt retry kar ke order confirm kijiye: https://pay.revive.in/pay/${event._id}`;
+      return `Hi ${name}, aapka ${amountStr} ka payment abhi bhi incomplete status par hai. Gateway attempt retry kar ke order confirm kijiye: ${payLink}`;
     } else {
-      return `Important: Payment of ${amountStr} for order #${event._id.toString().slice(-6)} failed. Please complete transaction immediately to prevent auto-cancellation. Link: https://pay.revive.in/pay/${event._id}`;
+      return `Important: Payment of ${amountStr} for order #${event._id.toString().slice(-6)} failed. Please complete transaction immediately to prevent auto-cancellation. Link: ${payLink}`;
     }
   }
 
   if (event.type === 'cart_abandoned') {
     if (tone === 'soft') {
-      return `Namaste ${name}! Aapka cart mein ${amountStr} worth items pending hain. Stock khatam hone se pehle check out kar lijiye! Link: https://store.revive.in/cart/${event._id}`;
+      return `Namaste ${name}! Aapka cart mein ${amountStr} worth items pending hain. Stock khatam hone se pehle check out kar lijiye! Link: ${payLink}`;
     } else if (tone === 'medium') {
-      return `Aapka cart wait kar raha hai, ${name}! Complete your purchase of ${amountStr} with extra 5% instant discount now: https://store.revive.in/cart/${event._id}`;
+      return `Aapka cart wait kar raha hai, ${name}! Complete your purchase of ${amountStr} with extra 5% instant discount now: ${payLink}`;
     } else {
-      return `Alert: Items in your cart worth ${amountStr} will be released back to inventory in 2 hours. Secure them now: https://store.revive.in/cart/${event._id}`;
+      return `Alert: Items in your cart worth ${amountStr} will be released back to inventory in 2 hours. Secure them now: ${payLink}`;
     }
   }
 
   if (event.type === 'subscription_failed') {
     if (tone === 'soft') {
-      return `Hi ${name}, aapka plan renewal payment ${amountStr} process nahi ho paya. Services active rakhne ke liye payment method update kar lijiye: https://revive.in/subs/${event._id}`;
+      return `Hi ${name}, aapka plan renewal payment ${amountStr} process nahi ho paya. Services active rakhne ke liye payment method update kar lijiye: ${payLink}`;
     } else if (tone === 'medium') {
-      return `Aapka subscription renewal of ${amountStr} pending hai. Next 24 hours mein uninterrupted access ke liye bill clear kijiye: https://revive.in/subs/${event._id}`;
+      return `Aapka subscription renewal of ${amountStr} pending hai. Next 24 hours mein uninterrupted access ke liye bill clear kijiye: ${payLink}`;
     } else {
-      return `Urgent Notice: Account subscription payment of ${amountStr} is past grace period. Account access will be paused shortly unless resolved: https://revive.in/subs/${event._id}`;
+      return `Urgent Notice: Account subscription payment of ${amountStr} is past grace period. Account access will be paused shortly unless resolved: ${payLink}`;
     }
   }
 
   // invoice_overdue
   if (tone === 'soft') {
-    return `Namaste ${name}, invoice for ${amountStr} is due. Kripya verification aur payment schedule double check kar lijiye. Details: https://revive.in/inv/${event._id}`;
+    return `Namaste ${name}, invoice for ${amountStr} is due. Kripya verification aur payment schedule double check kar lijiye. Details: ${payLink}`;
   } else if (tone === 'medium') {
-    return `Reminder: Invoice #${event._id.toString().slice(-6)} of ${amountStr} is currently overdue by ${event.ageInHours} hours. Please remit payment via bank transfer/UPI today.`;
+    return `Reminder: Invoice #${event._id.toString().slice(-6)} of ${amountStr} is currently overdue by ${event.ageInHours} hours. Please remit payment via bank transfer/UPI today: ${payLink}`;
   } else {
-    return `Formal Notice: Invoice #${event._id.toString().slice(-6)} of ${amountStr} is severely overdue (${event.ageInHours}h past due date). Please clear receivables immediately to prevent service suspension.`;
+    return `Formal Notice: Invoice #${event._id.toString().slice(-6)} of ${amountStr} is severely overdue (${event.ageInHours}h past due date). Please clear receivables immediately to prevent service suspension: ${payLink}`;
   }
 };
 
@@ -244,18 +246,21 @@ export const executeToolCall = async (toolName, args) => {
 
       // Trigger REAL email delivery if channel is email
       let emailResult = null;
-      if (args.channel === 'email') {
-        const subject = `Revive Notice: ${event.type.replace('_', ' ').toUpperCase()} — ₹${event.amount.toLocaleString('en-IN')}`;
-        emailResult = await sendEmailReminder(customer.email, subject, messageContent);
-      }
-
-      // Trigger REAL Telegram delivery if channel is telegram
       let tgResult = null;
       let deliveryStatus = 'sent';
       let deliveryError = null;
       let telegramMessageId = null;
 
-      if (args.channel === 'telegram') {
+      if (args.channel === 'email') {
+        const subject = `Revive Notice: ${event.type.replace('_', ' ').toUpperCase()} — ₹${event.amount.toLocaleString('en-IN')}`;
+        emailResult = await sendEmailReminder(customer.email, subject, messageContent);
+        if (!emailResult?.success) {
+          deliveryStatus = 'failed';
+          deliveryError = emailResult?.error || 'Email dispatch failed';
+        } else {
+          deliveryStatus = 'sent';
+        }
+      } else if (args.channel === 'telegram') {
         tgResult = await sendTelegramMessage(
           `[Revive Alert] ${customer.name} — ${event.type} — ₹${event.amount}\n\n${messageContent}`
         );
@@ -275,7 +280,7 @@ export const executeToolCall = async (toolName, args) => {
       await recCase.save();
 
       const actionReason = args.channel === 'email'
-        ? `Dispatched real email reminder to ${customer.email}: "${messageContent}" (Result: ${emailResult?.status || 'sent'})`
+        ? `Dispatched email reminder to ${customer.email}: "${messageContent}" (Status: ${deliveryStatus}${deliveryError ? `, Error: ${deliveryError}` : ''})`
         : args.channel === 'telegram'
         ? `Dispatched Telegram reminder to ${customer.name}: "${messageContent}" (Status: ${deliveryStatus}${deliveryError ? `, Error: ${deliveryError}` : ''})`
         : `Sent ${args.tone} tone reminder on ${args.channel.toUpperCase()}: "${messageContent}"`;

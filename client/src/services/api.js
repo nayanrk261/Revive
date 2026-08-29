@@ -97,3 +97,20 @@ export const reseedDatabase = async () => {
   const res = await axios.post(`${API_BASE}/seed`, {}, getAuthHeader());
   return res.data;
 };
+
+// Public Customer Portal API calls (Unauthenticated)
+export const getPublicEventDetail = async (eventId) => {
+  const res = await axios.get(`${API_BASE}/public/event/${eventId}`);
+  return res.data;
+};
+
+export const retryPublicPayment = async (eventId) => {
+  const res = await axios.post(`${API_BASE}/public/event/${eventId}/retry`);
+  return res.data;
+};
+
+export const completePublicPayment = async (eventId, paymentMethod = 'upi_razorpay') => {
+  const res = await axios.post(`${API_BASE}/public/event/${eventId}/pay`, { paymentMethod });
+  return res.data;
+};
+

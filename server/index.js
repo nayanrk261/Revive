@@ -8,6 +8,7 @@ import dashboardRoutes from './routes/dashboardRoutes.js';
 import eventRoutes from './routes/eventRoutes.js';
 import recoveryRoutes from './routes/recoveryRoutes.js';
 import agentRoutes from './routes/agentRoutes.js';
+import publicRoutes from './routes/publicRoutes.js';
 import { seedDatabase } from './seed/seedData.js';
 import { RevenueEvent } from './models/RevenueEvent.js';
 
@@ -18,7 +19,7 @@ const PORT = process.env.PORT || 5005;
 
 const clientUrl = process.env.CLIENT_URL;
 app.use(cors({
-  origin: clientUrl ? [clientUrl, 'http://localhost:5173', 'http://localhost:3000', 'http://localhost:5005'] : '*',
+  origin: clientUrl ? [clientUrl, 'http://localhost:5173', 'http://localhost:3000', 'http://localhost:5005'] : true,
   credentials: true
 }));
 app.use(express.json({ limit: '10mb' }));
@@ -30,6 +31,7 @@ app.use('/api/dashboard', dashboardRoutes);
 app.use('/api/events', eventRoutes);
 app.use('/api/recovery', recoveryRoutes);
 app.use('/api/agent', agentRoutes);
+app.use('/api/public', publicRoutes);
 
 // Seed API endpoint for instant reset / re-seeding from UI
 app.post('/api/seed', async (req, res) => {
@@ -59,6 +61,17 @@ const startServer = async () => {
 
   app.listen(PORT, () => {
     console.log(`[SERVER] Revive AI Backend running on http://localhost:${PORT}`);
+
+    const smtpUser = process.env.SMTP_USER;
+    const smtpPass = process.env.SMTP_PASS;
+    const smtpConfigured = Boolean(smtpUser && smtpPass && smtpUser !== 'your_email@gmail.com' && smtpPass !== 'your_gmail_app_password');
+
+    const tgToken = process.env.TELEGRAM_BOT_TOKEN;
+    const tgChat = process.env.TELEGRAM_CHAT_ID;
+    const telegramConfigured = Boolean(tgToken && tgChat && tgToken !== 'your_bot_token_from_botfather');
+
+    console.log(`[CONFIG] SMTP Email: ${smtpConfigured ? `CONFIGURED (${smtpUser})` : 'NOT CONFIGURED — real email sends will fail until valid credentials are added to server/.env'}`);
+    console.log(`[CONFIG] Telegram Bot: ${telegramConfigured ? 'CONFIGURED (Bot Token & Chat ID active)' : 'NOT CONFIGURED — Telegram sends will fail until token/chat ID are set in server/.env'}`);
   });
 };
 

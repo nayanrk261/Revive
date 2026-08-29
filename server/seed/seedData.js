@@ -83,6 +83,19 @@ export const seedDatabase = async () => {
     });
   }
 
+  // Push fixed test customer for live delivery testing
+  customers.push({
+    name: "Nayan Khandelwal",
+    phone: "+91 9999999999",
+    email: "aiwithnayankhandelwal25@gmail.com",
+    paymentHistory: {
+      totalPastEvents: 8,
+      lateCount: 2,
+      avgDaysToResolve: 3,
+      reliabilityScore: 0.75
+    }
+  });
+
   const createdCustomers = await Customer.insertMany(customers);
   console.log(`[SEED] Inserted ${createdCustomers.length} customers.`);
 
@@ -100,6 +113,8 @@ export const seedDatabase = async () => {
   const newCustomer = createdCustomers.find(c => c.paymentHistory.totalPastEvents <= 2);
   // 4. Subscription that's failed before
   const moderateCustomer = createdCustomers.find(c => c.paymentHistory.reliabilityScore >= 0.5 && c.paymentHistory.reliabilityScore <= 0.8);
+  // 5. Fixed test customer for live Email/Telegram testing
+  const nayanCustomer = createdCustomers.find(c => c.email === "aiwithnayankhandelwal25@gmail.com");
 
   const edgeCases = [
     {
@@ -141,6 +156,16 @@ export const seedDatabase = async () => {
       ageInHours: 36,
       status: 'open',
       failureReason: 'card_expired'
+    },
+    {
+      type: 'payment_failed',
+      customerId: nayanCustomer?._id || createdCustomers[0]._id,
+      amount: 4500,
+      createdAt: new Date(Date.now() - 1 * 3600 * 1000),
+      dueDate: null,
+      ageInHours: 1,
+      status: 'open',
+      failureReason: 'insufficient_balance'
     }
   ];
 
@@ -211,15 +236,16 @@ export const seedDatabase = async () => {
 
     const attempts = ev.status === 'open' ? (Math.random() < 0.4 ? 1 : 0) : (ev.status === 'recovered' ? 2 : 3);
 
+    const isNayan = customer.name === 'Nayan Khandelwal';
     const recCase = {
       eventId: ev._id,
       customerId: ev.customerId,
       riskScore,
       riskLevel,
       recoveryProbability: recProb,
-      recommendedAction: riskScore > 70 ? 'ESCALATE' : (ev.type === 'payment_failed' ? 'RETRY_PAYMENT' : 'SEND_REMINDER'),
+      recommendedAction: isNayan ? 'SEND_REMINDER' : (riskScore > 70 ? 'ESCALATE' : (ev.type === 'payment_failed' ? 'RETRY_PAYMENT' : 'SEND_REMINDER')),
       tone: riskScore > 70 ? 'firm' : (attempts > 0 ? 'medium' : 'soft'),
-      channel: ev.type === 'invoice_overdue' ? 'email' : (Math.random() > 0.5 ? 'whatsapp' : 'sms'),
+      channel: isNayan ? 'telegram' : (ev.type === 'invoice_overdue' ? 'email' : (Math.random() > 0.5 ? 'whatsapp' : 'sms')),
       attempts,
       lastActionAt: attempts > 0 ? new Date(Date.now() - Math.floor(Math.random() * 24) * 3600 * 1000) : null,
       promiseToPay: {
