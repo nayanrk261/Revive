@@ -12,6 +12,8 @@ import publicRoutes from './routes/publicRoutes.js';
 import { seedDatabase } from './seed/seedData.js';
 import { RevenueEvent } from './models/RevenueEvent.js';
 
+import { getLLMProviderInfo } from './services/agent.js';
+
 dotenv.config();
 
 const app = express();
@@ -61,6 +63,9 @@ const startServer = async () => {
 
   app.listen(PORT, () => {
     console.log(`[SERVER] Revive AI Backend running on http://localhost:${PORT}`);
+
+    const llmInfo = getLLMProviderInfo();
+    console.log(`[CONFIG] LLM Provider: ${llmInfo.name}${llmInfo.model ? ` (Model: ${llmInfo.model})` : ''}`);
 
     const smtpUser = process.env.SMTP_USER;
     const smtpPass = process.env.SMTP_PASS;

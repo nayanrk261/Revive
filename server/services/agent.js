@@ -7,11 +7,32 @@ import { AgentAction } from '../models/AgentAction.js';
 
 let openaiClient = null;
 
-if (process.env.OPENAI_API_KEY || process.env.OPENROUTER_API_KEY) {
-  const apiKey = process.env.OPENAI_API_KEY || process.env.OPENROUTER_API_KEY;
-  const baseURL = process.env.OPENROUTER_API_KEY ? 'https://openrouter.ai/api/v1' : undefined;
-  openaiClient = new OpenAI({ apiKey, baseURL });
-}
+export const getLLMProviderInfo = () => {
+  if (process.env.GROQ_API_KEY && process.env.GROQ_API_KEY !== 'gsk_your_groq_api_key') {
+    return { name: 'Groq', model: process.env.AI_MODEL || 'openai/gpt-oss-120b' };
+  }
+  if (process.env.OPENROUTER_API_KEY && process.env.OPENROUTER_API_KEY !== 'your_openrouter_key_if_using_openrouter') {
+    return { name: 'OpenRouter', model: process.env.AI_MODEL || 'openai/gpt-4o-mini' };
+  }
+  if (process.env.OPENAI_API_KEY && process.env.OPENAI_API_KEY !== 'your_openai_or_openrouter_key') {
+    return { name: 'OpenAI', model: process.env.AI_MODEL || 'gpt-4o-mini' };
+  }
+  return { name: 'None — using heuristic fallback', model: null };
+};
+
+export const initOpenAIClient = () => {
+  if (process.env.GROQ_API_KEY || process.env.OPENAI_API_KEY || process.env.OPENROUTER_API_KEY) {
+    const apiKey = process.env.GROQ_API_KEY || process.env.OPENAI_API_KEY || process.env.OPENROUTER_API_KEY;
+    let baseURL;
+    if (process.env.GROQ_API_KEY) baseURL = 'https://api.groq.com/openai/v1';
+    else if (process.env.OPENROUTER_API_KEY) baseURL = 'https://openrouter.ai/api/v1';
+
+    return new OpenAI({ apiKey, baseURL });
+  }
+  return null;
+};
+
+openaiClient = initOpenAIClient();
 
 /**
  * Intelligent Multi-Step Agent Analysis Engine (Revive)
@@ -52,6 +73,8 @@ export const runAgentAnalysis = async (caseId) => {
   let decisionResult = null;
 
   // Step 3: LLM or Intelligent Fallback reasoning loop
+  if (!openaiClient) openaiClient = initOpenAIClient();
+
   if (openaiClient) {
     try {
       const messages = [
@@ -74,19 +97,45 @@ You MUST provide a plain-language explanation in 'reason' referencing actual dat
         }
       ];
 
+      const providerInfo = getLLMProviderInfo();
+      const modelToUse = process.env.AI_MODEL || (process.env.GROQ_API_KEY ? 'openai/gpt-oss-120b' : (process.env.OPENROUTER_API_KEY ? 'openai/gpt-4o-mini' : 'gpt-4o-mini'));
+
       const response = await openaiClient.chat.completions.create({
-        model: process.env.AI_MODEL || 'gpt-4o-mini',
+        model: modelToUse,
         messages,
         response_format: { type: 'json_object' }
       });
 
-      const parsed = JSON.parse(response.choices[0].message.content);
+      const rawContent = response.choices[0].message.content;
+      let parsed = null;
+      try {
+        parsed = JSON.parse(rawContent);
+      } catch (pErr) {
+        const jsonMatch = rawContent.match(/\{[\s\S]*\}/);
+        if (jsonMatch) {
+          parsed = JSON.parse(jsonMatch[0]);
+        } else {
+          throw pErr;
+        }
+      }
+
+      const rawRisk = (parsed.risk || recCase.riskLevel || 'MEDIUM').toString().toUpperCase();
+      const validRisk = ['LOW', 'MEDIUM', 'HIGH'].includes(rawRisk) ? rawRisk : recCase.riskLevel;
+      let prob = recCase.recoveryProbability;
+      if (parsed.recoveryProbability !== undefined) {
+        let pVal = typeof parsed.recoveryProbability === 'number' ? parsed.recoveryProbability : parseFloat(parsed.recoveryProbability);
+        if (!isNaN(pVal)) {
+          if (pVal > 1) pVal = pVal / 100;
+          prob = Math.max(0.01, Math.min(0.99, pVal));
+        }
+      }
+
       decisionResult = {
-        risk: parsed.risk || recCase.riskLevel,
-        recoveryProbability: parsed.recoveryProbability ?? recCase.recoveryProbability,
+        risk: validRisk,
+        recoveryProbability: prob,
         recommendedAction: parsed.recommendedAction || 'SEND_REMINDER',
-        tone: parsed.tone || 'soft',
-        channel: parsed.channel || 'whatsapp',
+        tone: (parsed.tone || 'soft').toLowerCase(),
+        channel: (parsed.channel || 'whatsapp').toLowerCase(),
         reason: parsed.reason || 'AI agent analyzed history and event parameters.',
         shouldEscalate: parsed.shouldEscalate ?? (parsed.recommendedAction === 'ESCALATE')
       };
