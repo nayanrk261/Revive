@@ -12,7 +12,7 @@ router.get('/', requireAuth, async (req, res) => {
 
     const query = { accountId };
     if (type) query.type = type;
-    if (status) query.status = status;
+    if (status) query.status = status.toLowerCase();
 
     const events = await RevenueEvent.find(query)
       .populate('customerId')

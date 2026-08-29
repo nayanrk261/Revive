@@ -24,7 +24,8 @@ const fallbackParseRawText = (rawText) => {
 
   for (let i = 0; i < lines.length; i++) {
     const line = lines[i];
-    if (line.toLowerCase().includes('customer') && line.toLowerCase().includes('amount')) continue; // Skip CSV header
+    // Skip CSV header line if it looks like a header (no colons and starts with customer/name)
+    if (line.toLowerCase().includes('customer') && line.toLowerCase().includes('amount') && !line.includes(':') && !line.match(/\d/)) continue;
 
     const parts = line.includes(',') ? line.split(',') : line.split(/\s+/);
     let name = parts[0]?.trim() || `Customer ${i + 1}`;
