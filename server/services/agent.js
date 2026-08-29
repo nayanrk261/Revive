@@ -59,7 +59,7 @@ export const runAgentAnalysis = async (caseId) => {
           role: 'system',
           content: `You are Revive AI Revenue Recovery Agent. Analyze the revenue event and customer history data provided, and produce a structured JSON decision.
 Available event types: payment_failed, cart_abandoned, subscription_failed, invoice_overdue.
-Your task: Evaluate risk, calculate recovery probability (0.0 - 1.0), pick recommended action (SEND_REMINDER, RETRY_PAYMENT, ESCALATE, WAIT, CLOSE), select tone (soft, medium, firm), and select channel (sms, whatsapp, email).
+Your task: Evaluate risk, calculate recovery probability (0.0 - 1.0), pick recommended action (SEND_REMINDER, RETRY_PAYMENT, ESCALATE, WAIT, CLOSE), select tone (soft, medium, firm), and select channel (sms, whatsapp, email, telegram).
 You MUST provide a plain-language explanation in 'reason' referencing actual data values (amount, reliability, age, failure reason). Return ONLY JSON matching schema.`
         },
         {

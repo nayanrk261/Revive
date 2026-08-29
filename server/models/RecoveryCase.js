@@ -29,7 +29,7 @@ const recoveryCaseSchema = new mongoose.Schema({
     default: 'SEND_REMINDER'
   },
   tone: { type: String, enum: ['soft', 'medium', 'firm'], default: 'soft' },
-  channel: { type: String, enum: ['sms', 'whatsapp', 'email'], default: 'whatsapp' },
+  channel: { type: String, enum: ['sms', 'whatsapp', 'email', 'telegram'], default: 'whatsapp' },
   attempts: { type: Number, default: 0 },
   lastActionAt: { type: Date, default: null },
   promiseToPay: {

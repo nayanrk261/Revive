@@ -14,6 +14,7 @@ export const CaseDetail = ({ caseId, onBack }) => {
   const [paying, setPaying] = useState(false);
   const [escalating, setEscalating] = useState(false);
   const [guardrailAlert, setGuardrailAlert] = useState(null);
+  const [selectedChannel, setSelectedChannel] = useState('');
 
   const loadCase = async () => {
     setLoading(true);
@@ -23,6 +24,9 @@ export const CaseDetail = ({ caseId, onBack }) => {
         setCaseData(data.case);
         setActions(data.actions);
         setPayments(data.payments);
+        if (data.case?.channel) {
+          setSelectedChannel(data.case.channel);
+        }
       }
     } catch (err) {
       console.error('Failed to load case detail:', err);
@@ -54,7 +58,8 @@ export const CaseDetail = ({ caseId, onBack }) => {
     setExecuting(true);
     setGuardrailAlert(null);
     try {
-      const res = await executeCaseAction(caseId);
+      const channelToUse = selectedChannel || caseData?.channel || 'whatsapp';
+      const res = await executeCaseAction(caseId, { channel: channelToUse });
       if (res.guardrailVeto) {
         setGuardrailAlert(res.message);
       }
@@ -238,10 +243,17 @@ export const CaseDetail = ({ caseId, onBack }) => {
           </div>
 
           <div className="bg-[#F8F4EA] p-3 rounded-sm border border-[#E2D9C8]">
-            <span className="font-mono text-[10px] text-[#5A6578] block font-bold uppercase">CHANNEL</span>
-            <span className="font-mono text-base font-extrabold text-[#1E7E45] uppercase">
-              {caseData.channel || 'whatsapp'}
-            </span>
+            <span className="font-mono text-[10px] text-[#5A6578] block font-bold uppercase mb-0.5">TARGET CHANNEL</span>
+            <select
+              value={selectedChannel || caseData.channel || 'whatsapp'}
+              onChange={(e) => setSelectedChannel(e.target.value)}
+              className="font-mono text-sm font-extrabold text-[#1E7E45] uppercase bg-[#FFFDF8] border border-[#E2D9C8] rounded-sm px-2 py-1 w-full focus:outline-none focus:border-[#1A2B4C]"
+            >
+              <option value="sms">SMS (Simulated)</option>
+              <option value="whatsapp">WhatsApp (Simulated)</option>
+              <option value="email">Email (Real SMTP)</option>
+              <option value="telegram">Telegram (Real Instant Bot)</option>
+            </select>
           </div>
         </div>
 

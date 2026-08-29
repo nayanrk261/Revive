@@ -5,6 +5,8 @@ import { AgentAction } from '../models/AgentAction.js';
 import { Payment } from '../models/Payment.js';
 import { createRazorpayOrder, checkRazorpayPaymentStatus } from './razorpayService.js';
 import { sendEmailReminder } from './mailService.js';
+import { sendTelegramMessage } from './telegramService.js';
+
 
 /**
  * Hinglish Message Generator based on tone & type (Revive Branded)
@@ -117,12 +119,12 @@ export const toolsSchema = [
     type: 'function',
     function: {
       name: 'send_reminder',
-      description: 'Send a Hinglish reminder message via SMS, WhatsApp, or Email',
+      description: 'Send a Hinglish reminder message via SMS, WhatsApp, Email, or Telegram',
       parameters: {
         type: 'object',
         properties: {
           caseId: { type: 'string' },
-          channel: { type: 'string', enum: ['sms', 'whatsapp', 'email'] },
+          channel: { type: 'string', enum: ['sms', 'whatsapp', 'email', 'telegram'] },
           tone: { type: 'string', enum: ['soft', 'medium', 'firm'] }
         },
         required: ['caseId', 'channel', 'tone']
@@ -247,6 +249,25 @@ export const executeToolCall = async (toolName, args) => {
         emailResult = await sendEmailReminder(customer.email, subject, messageContent);
       }
 
+      // Trigger REAL Telegram delivery if channel is telegram
+      let tgResult = null;
+      let deliveryStatus = 'sent';
+      let deliveryError = null;
+      let telegramMessageId = null;
+
+      if (args.channel === 'telegram') {
+        tgResult = await sendTelegramMessage(
+          `[Revive Alert] ${customer.name} — ${event.type} — ₹${event.amount}\n\n${messageContent}`
+        );
+        if (!tgResult.success) {
+          deliveryStatus = 'failed';
+          deliveryError = tgResult.error;
+        } else {
+          deliveryStatus = 'sent';
+          telegramMessageId = tgResult.messageId;
+        }
+      }
+
       recCase.attempts += 1;
       recCase.lastActionAt = new Date();
       recCase.tone = args.tone;
@@ -255,6 +276,8 @@ export const executeToolCall = async (toolName, args) => {
 
       const actionReason = args.channel === 'email'
         ? `Dispatched real email reminder to ${customer.email}: "${messageContent}" (Result: ${emailResult?.status || 'sent'})`
+        : args.channel === 'telegram'
+        ? `Dispatched Telegram reminder to ${customer.name}: "${messageContent}" (Status: ${deliveryStatus}${deliveryError ? `, Error: ${deliveryError}` : ''})`
         : `Sent ${args.tone} tone reminder on ${args.channel.toUpperCase()}: "${messageContent}"`;
 
       const actionLog = await AgentAction.create({
@@ -263,15 +286,19 @@ export const executeToolCall = async (toolName, args) => {
         tool: 'send_reminder',
         action: `SEND_REMINDER_${args.channel.toUpperCase()}_${args.tone.toUpperCase()}`,
         reason: actionReason,
-        result: 'success'
+        result: deliveryStatus === 'failed' ? 'failed' : 'success'
       });
 
       return {
-        status: 'sent',
+        status: deliveryStatus === 'failed' ? 'failed' : 'sent',
+        deliveryStatus,
+        deliveryError,
+        telegramMessageId,
         channel: args.channel,
         tone: args.tone,
         message: messageContent,
         emailResult,
+        tgResult,
         actionId: actionLog._id
       };
     }
