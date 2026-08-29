@@ -1,5 +1,4 @@
 import React from 'react';
-import { Search, Activity, MessageSquare, CheckCircle } from 'lucide-react';
 
 export const RecoveryFunnel = ({ funnel }) => {
   const detected = funnel?.detected || 0;
@@ -8,41 +7,58 @@ export const RecoveryFunnel = ({ funnel }) => {
   const recovered = funnel?.recovered || 0;
 
   const stages = [
-    { label: 'DETECTED', count: detected, icon: Search, color: 'border-[#1A2B4C] bg-[#EBF2FA] text-[#1A2B4C]' },
-    { label: 'DIAGNOSED', count: diagnosed, icon: Activity, color: 'border-[#C67D0A] bg-[#FEF6E6] text-[#C67D0A]' },
-    { label: 'CONTACTED', count: contacted, icon: MessageSquare, color: 'border-[#6B38AC] bg-[#F3ECFB] text-[#6B38AC]' },
-    { label: 'RECOVERED', count: recovered, icon: CheckCircle, color: 'border-[#1E7E45] bg-[#EBF7F0] text-[#1E7E45]' }
+    { num: '01', label: 'DETECTED', count: detected, highlight: false },
+    { num: '02', label: 'DIAGNOSED', count: diagnosed, highlight: false },
+    { num: '03', label: 'CONTACTED', count: contacted, highlight: false },
+    { num: '04', label: 'RECOVERED', count: recovered, highlight: true }
   ];
 
   return (
-    <div className="ledger-card p-6 rounded-lg mb-8">
-      <h3 className="font-serif font-bold text-lg text-[#0F2042] uppercase tracking-wider mb-4 border-b border-[#E2D9C8] pb-2 flex items-center justify-between">
-        <span>RECOVERY FUNNEL STAGES</span>
-        <span className="font-mono text-xs text-[#5A6578] font-normal">Detect → Diagnose → Decide → Act → Track → Stop</span>
-      </h3>
+    <div className="ledger-card p-6 rounded-sm mb-8">
+      <div className="flex items-center justify-between border-b border-[#E2D9C8] pb-3 mb-6">
+        <h3 className="font-serif font-bold text-lg text-[#0F2042] uppercase tracking-wider">
+          RECOVERY FUNNEL REGISTER
+        </h3>
+        <span className="font-mono text-xs text-[#5A6578]">
+          DETECT → DIAGNOSE → DECIDE → ACT → TRACK → STOP
+        </span>
+      </div>
       
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+      {/* Single Connected Paper Strip */}
+      <div className="bg-[#F8F4EA] border border-[#D5C9B3] rounded-sm flex flex-col md:flex-row items-stretch">
         {stages.map((st, idx) => {
-          const Icon = st.icon;
           const pct = detected > 0 ? ((st.count / detected) * 100).toFixed(0) : 0;
           return (
-            <div key={idx} className={`p-4 rounded border-2 ${st.color} flex flex-col justify-between relative overflow-hidden`}>
-              <div className="flex items-center justify-between mb-2">
-                <span className="font-mono text-xs font-bold tracking-wider">{st.label}</span>
-                <Icon className="w-5 h-5 opacity-80" />
-              </div>
-              <div className="mt-2">
-                <div className="font-mono font-bold text-3xl">{st.count}</div>
-                <div className="font-serif italic text-xs mt-1 opacity-80">
-                  {pct}% of detected cases
+            <React.Fragment key={idx}>
+              <div className="flex-1 p-5 flex flex-col justify-between relative">
+                
+                {/* Red Ink Folio Number */}
+                <div className="flex items-center justify-between mb-3">
+                  <span className="font-mono text-xs font-bold text-[#D9383A]">
+                    FOLIO {st.num}
+                  </span>
+                  <span className="font-mono text-[11px] font-bold text-[#0F2042] tracking-wider uppercase">
+                    {st.label}
+                  </span>
                 </div>
+
+                {/* Big Count */}
+                <div>
+                  <div className={`font-mono text-4xl font-extrabold ${st.highlight ? 'text-[#1E7E45]' : 'text-[#0F2042]'}`}>
+                    {st.count}
+                  </div>
+                  <div className="font-serif italic text-xs text-[#5A6578] mt-1">
+                    {pct}% of total detected
+                  </div>
+                </div>
+
               </div>
+
+              {/* Perforation divider line between segments */}
               {idx < 3 && (
-                <div className="hidden md:block absolute -right-3 top-1/2 -translate-y-1/2 z-10 text-gray-400 font-bold text-xl">
-                  →
-                </div>
+                <div className="hidden md:block w-px bg-[#D5C9B3] my-3 border-r border-dashed border-[#BDB099]" />
               )}
-            </div>
+            </React.Fragment>
           );
         })}
       </div>

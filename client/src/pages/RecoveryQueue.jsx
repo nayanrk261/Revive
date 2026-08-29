@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { getEvents } from '../services/api';
 import { StampBadge } from '../components/StampBadge';
-import { Filter, Eye, ChevronRight, Search } from 'lucide-react';
 
 export const RecoveryQueue = ({ onSelectCase }) => {
   const [events, setEvents] = useState([]);
@@ -60,20 +59,19 @@ export const RecoveryQueue = ({ onSelectCase }) => {
         <div className="flex flex-wrap items-center gap-3 w-full md:w-auto">
           
           <div className="relative flex-1 sm:w-64">
-            <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-[#5A6578]" />
             <input
               type="text"
               placeholder="Search customer, email..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="font-mono text-xs pl-9 pr-3 py-2 w-full bg-[#FFFDF8] border border-[#E2D9C8] rounded focus:outline-none focus:border-[#1A2B4C]"
+              className="font-mono text-xs px-3 py-2 w-full bg-[#FFFDF8] border border-[#E2D9C8] rounded-sm focus:outline-none focus:border-[#1A2B4C]"
             />
           </div>
 
           <select
             value={typeFilter}
             onChange={(e) => setTypeFilter(e.target.value)}
-            className="font-mono text-xs px-3 py-2 bg-[#FFFDF8] border border-[#E2D9C8] rounded focus:outline-none focus:border-[#1A2B4C]"
+            className="font-mono text-xs px-3 py-2 bg-[#FFFDF8] border border-[#E2D9C8] rounded-sm focus:outline-none focus:border-[#1A2B4C]"
           >
             <option value="">All Disruption Types</option>
             <option value="payment_failed">Payment Failed</option>
@@ -85,7 +83,7 @@ export const RecoveryQueue = ({ onSelectCase }) => {
           <select
             value={statusFilter}
             onChange={(e) => setStatusFilter(e.target.value)}
-            className="font-mono text-xs px-3 py-2 bg-[#FFFDF8] border border-[#E2D9C8] rounded focus:outline-none focus:border-[#1A2B4C]"
+            className="font-mono text-xs px-3 py-2 bg-[#FFFDF8] border border-[#E2D9C8] rounded-sm focus:outline-none focus:border-[#1A2B4C]"
           >
             <option value="">All Statuses</option>
             <option value="open">Open Cases</option>
@@ -98,7 +96,7 @@ export const RecoveryQueue = ({ onSelectCase }) => {
       </div>
 
       {/* Ledger Register Table */}
-      <div className="ledger-card rounded-lg overflow-hidden border border-[#E2D9C8]">
+      <div className="ledger-card rounded-sm overflow-hidden border border-[#E2D9C8]">
         {loading ? (
           <div className="p-12 text-center font-mono text-[#5A6578]">Loading queue records...</div>
         ) : filteredEvents.length === 0 ? (
@@ -108,13 +106,13 @@ export const RecoveryQueue = ({ onSelectCase }) => {
             <table className="w-full text-left ledger-table">
               <thead className="bg-[#F8F4EA]">
                 <tr>
-                  <th className="py-3 px-4 text-xs">EVENT ID / DATE</th>
-                  <th className="py-3 px-4 text-xs">TYPE</th>
-                  <th className="py-3 px-4 text-xs">CUSTOMER & RELIABILITY</th>
-                  <th className="py-3 px-4 text-xs text-right">AMOUNT</th>
-                  <th className="py-3 px-4 text-xs text-center">RISK LEVEL</th>
-                  <th className="py-3 px-4 text-xs text-center">STATUS</th>
-                  <th className="py-3 px-4 text-xs text-center">ACTION</th>
+                  <th className="py-3.5 px-4 text-xs">EVENT ID / DATE</th>
+                  <th className="py-3.5 px-4 text-xs">TYPE</th>
+                  <th className="py-3.5 px-4 text-xs">CUSTOMER & RELIABILITY</th>
+                  <th className="py-3.5 px-4 text-xs text-right">AMOUNT</th>
+                  <th className="py-3.5 px-4 text-xs text-center">RISK SCORE</th>
+                  <th className="py-3.5 px-4 text-xs text-center">STATUS</th>
+                  <th className="py-3.5 px-4 text-xs text-center">ACTION</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-[#EBDDC8]">
@@ -127,7 +125,7 @@ export const RecoveryQueue = ({ onSelectCase }) => {
                     <tr
                       key={ev._id}
                       onClick={() => recCase && onSelectCase(recCase._id)}
-                      className="hover:bg-[#FDFBF7] cursor-pointer transition-colors group"
+                      className="hover:bg-[#F8F4EA]/60 cursor-pointer transition-colors"
                     >
                       <td className="py-3.5 px-4">
                         <div className="font-mono font-bold text-xs text-[#0F2042]">
@@ -139,7 +137,7 @@ export const RecoveryQueue = ({ onSelectCase }) => {
                       </td>
 
                       <td className="py-3.5 px-4">
-                        <span className="font-mono text-xs font-semibold px-2 py-1 bg-[#EAE2D2] text-[#0F2042] rounded">
+                        <span className="font-mono text-xs font-semibold px-2 py-0.5 bg-[#EAE2D2] text-[#0F2042] rounded-sm">
                           {getTypeLabel(ev.type)}
                         </span>
                         {ev.failureReason && (
@@ -155,7 +153,7 @@ export const RecoveryQueue = ({ onSelectCase }) => {
                         </div>
                         <div className="font-mono text-[11px] text-[#5A6578] flex items-center space-x-2">
                           <span>{customer?.phone}</span>
-                          <span>•</span>
+                          <span>·</span>
                           <span className={`${reliabilityPct >= 80 ? 'text-[#1E7E45]' : reliabilityPct < 40 ? 'text-[#B82525]' : 'text-[#C67D0A]'}`}>
                             Reliability: {reliabilityPct}%
                           </span>
@@ -168,11 +166,10 @@ export const RecoveryQueue = ({ onSelectCase }) => {
                         </div>
                       </td>
 
+                      {/* Plain text risk formatting: LEVEL (SCORE/100), no colored pill box */}
                       <td className="py-3.5 px-4 text-center">
-                        <span className={`font-mono text-xs font-bold px-2 py-0.5 rounded ${
-                          recCase?.riskLevel === 'HIGH' ? 'bg-[#FADBD8] text-[#B82525]' : recCase?.riskLevel === 'MEDIUM' ? 'bg-[#FCF3CF] text-[#C67D0A]' : 'bg-[#D4EFDF] text-[#1E7E45]'
-                        }`}>
-                          {recCase?.riskLevel || 'MED'} ({recCase?.riskScore || 50})
+                        <span className="font-serif italic text-xs font-bold text-[#0F2042]">
+                          {recCase?.riskLevel || 'MED'} <span className="text-[#5A6578] font-mono font-normal">({recCase?.riskScore || 50}/100)</span>
                         </span>
                       </td>
 
@@ -186,10 +183,9 @@ export const RecoveryQueue = ({ onSelectCase }) => {
                             e.stopPropagation();
                             if (recCase) onSelectCase(recCase._id);
                           }}
-                          className="inline-flex items-center space-x-1 font-mono text-xs px-3 py-1 bg-[#1A2B4C] hover:bg-[#0F2042] text-white rounded transition-all group-hover:scale-105"
+                          className="font-mono text-xs px-3 py-1 bg-[#1A2B4C] hover:bg-[#0F2042] text-white rounded-sm transition-all"
                         >
-                          <Eye className="w-3.5 h-3.5" />
-                          <span>INVESTIGATE</span>
+                          <span>INVESTIGATE →</span>
                         </button>
                       </td>
                     </tr>

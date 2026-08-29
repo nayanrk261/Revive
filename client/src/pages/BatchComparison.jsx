@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
 import { compareBaseline, runBatchProcess } from '../services/api';
-import { Zap, Play, CheckCircle2, AlertOctagon, TrendingUp, ShieldAlert, ArrowRight, RefreshCw } from 'lucide-react';
 
 export const BatchComparison = () => {
   const [data, setData] = useState(null);
@@ -47,17 +46,16 @@ export const BatchComparison = () => {
     <div className="space-y-8">
       
       {/* Header Banner */}
-      <div className="ledger-card p-6 rounded-lg bg-[#FAF6EC] border-2 border-[#1A2B4C] flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+      <div className="ledger-card p-6 rounded-sm bg-[#FAF6EC] border-2 border-[#1A2B4C] flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
         <div>
-          <div className="flex items-center space-x-2 text-[#D9383A] font-mono text-xs font-bold uppercase mb-1">
-            <Zap className="w-4 h-4" />
-            <span>PITCH BENCHMARK PROOF</span>
+          <div className="text-[#D9383A] font-mono text-xs font-bold uppercase mb-1">
+            PITCH BENCHMARK PROOF
           </div>
           <h2 className="font-serif font-extrabold text-2xl text-[#0F2042]">
             RULES-ONLY BASELINE VS REVIVE AI AGENT
           </h2>
           <p className="font-mono text-xs text-[#5A6578]">
-            Proves Revive agent adds true recovery lift compared to standard static rules engines.
+            Proves Revive agent adds true recovery lift compared to static rules engines.
           </p>
         </div>
 
@@ -65,18 +63,16 @@ export const BatchComparison = () => {
           <button
             onClick={runComparison}
             disabled={loading}
-            className="flex items-center space-x-2 font-mono text-xs px-4 py-2.5 bg-[#E2D9C8] hover:bg-[#D5C9B3] text-[#0F2042] border border-[#BDB099] rounded font-bold transition-all shadow-xs"
+            className="font-mono text-xs px-4 py-2.5 bg-[#E2D9C8] hover:bg-[#D5C9B3] text-[#0F2042] border border-[#BDB099] rounded-sm font-bold transition-all"
           >
-            <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
-            <span>RE-RUN COMPARISON</span>
+            <span>{loading ? 'RUNNING...' : 'RE-RUN COMPARISON'}</span>
           </button>
 
           <button
             onClick={handleRunAgentBatch}
             disabled={batchProcessing}
-            className="flex items-center space-x-2 font-mono text-xs px-5 py-2.5 bg-[#1A2B4C] hover:bg-[#0F2042] disabled:opacity-50 text-white rounded font-bold transition-all shadow-md"
+            className="font-mono text-xs px-5 py-2.5 bg-[#1A2B4C] hover:bg-[#0F2042] disabled:opacity-50 text-white rounded-sm font-bold transition-all"
           >
-            <Play className={`w-4 h-4 text-[#D9383A] ${batchProcessing ? 'animate-spin' : ''}`} />
             <span>{batchProcessing ? 'RUNNING BATCH...' : 'RUN AGENT ACROSS ALL OPEN CASES'}</span>
           </button>
         </div>
@@ -84,7 +80,6 @@ export const BatchComparison = () => {
 
       {loading ? (
         <div className="p-12 text-center font-mono text-[#5A6578]">
-          <div className="animate-spin inline-block w-8 h-8 border-4 border-[#D9383A] border-t-transparent rounded-full mb-4"></div>
           <p>Evaluating revenue recovery cases across both engines...</p>
         </div>
       ) : data ? (
@@ -93,11 +88,10 @@ export const BatchComparison = () => {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             
             {/* Rules-only Card */}
-            <div className="ledger-card p-6 rounded-lg border-2 border-gray-400 bg-[#F4F0E6] flex flex-col justify-between">
+            <div className="ledger-card p-6 rounded-sm border-2 border-gray-400 bg-[#F4F0E6] flex flex-col justify-between">
               <div>
-                <div className="flex justify-between items-start mb-3">
-                  <span className="font-mono text-xs font-bold text-gray-600 uppercase">1. RULES-ONLY BASELINE</span>
-                  <AlertOctagon className="w-5 h-5 text-gray-500" />
+                <div className="font-mono text-xs font-bold text-gray-600 uppercase mb-3">
+                  1. RULES-ONLY BASELINE
                 </div>
                 <div className="font-serif italic text-xs text-gray-600 mb-4">
                   Rule: If risk &gt; 70 → escalate; else 1 generic reminder, no follow-up.
@@ -116,11 +110,10 @@ export const BatchComparison = () => {
             </div>
 
             {/* Revive AI Agent Card */}
-            <div className="ledger-card p-6 rounded-lg border-2 border-[#1E7E45] bg-[#EBF7F0] shadow-md flex flex-col justify-between relative overflow-hidden">
+            <div className="ledger-card p-6 rounded-sm border-2 border-[#1E7E45] bg-[#EBF7F0] flex flex-col justify-between relative overflow-hidden">
               <div>
-                <div className="flex justify-between items-start mb-3">
-                  <span className="font-mono text-xs font-bold text-[#1E7E45] uppercase">2. REVIVE AI AGENT</span>
-                  <Zap className="w-5 h-5 text-[#1E7E45]" />
+                <div className="font-mono text-xs font-bold text-[#1E7E45] uppercase mb-3">
+                  2. REVIVE AI AGENT
                 </div>
                 <div className="font-serif italic text-xs text-[#1E7E45] mb-4">
                   Agent: Multi-step tool loop, Hinglish tone adaptation, promise tracking.
@@ -137,24 +130,24 @@ export const BatchComparison = () => {
                 <div>Escalated Cases: <strong>{data.wapasAgent?.escalatedCount}</strong></div>
               </div>
 
-              <div className="absolute right-2 bottom-2 opacity-10 pointer-events-none transform -rotate-12">
-                <span className="rubber-stamp stamp-recovered text-4xl">WINNER</span>
+              {/* Authentic Oval Rubber Stamp Mark for WINNER */}
+              <div className="absolute right-4 bottom-4 transform -rotate-12 opacity-80">
+                <span className="rubber-stamp stamp-recovered text-xl">WINNER</span>
               </div>
             </div>
 
             {/* Lift & Additional Revenue Card */}
-            <div className="ledger-card p-6 rounded-lg border-2 border-[#D9383A] bg-[#FFFDF8] flex flex-col justify-between">
+            <div className="ledger-card p-6 rounded-sm border-2 border-[#D9383A] bg-[#FFFDF8] flex flex-col justify-between">
               <div>
-                <div className="flex justify-between items-start mb-3">
-                  <span className="font-mono text-xs font-bold text-[#D9383A] uppercase">RECOVERY LIFT & LIFT VALUE</span>
-                  <TrendingUp className="w-5 h-5 text-[#D9383A]" />
+                <div className="font-mono text-xs font-bold text-[#D9383A] uppercase mb-3">
+                  RECOVERY LIFT & VALUE
                 </div>
                 <div className="font-mono text-4xl font-extrabold text-[#D9383A]">
                   +{data.liftPct}%
                 </div>
                 <div className="font-mono text-xs text-[#5A6578] mt-1 font-bold">Absolute Recovery Rate Increase</div>
                 
-                <div className="mt-4 p-3 bg-[#FADBD8] rounded border border-[#F5B7B1]">
+                <div className="mt-4 p-3 bg-[#FADBD8] rounded-sm border border-[#F5B7B1]">
                   <span className="font-mono text-[11px] text-[#B82525] uppercase font-bold block">Additional Revenue Saved:</span>
                   <span className="font-mono text-xl font-extrabold text-[#B82525]">
                     +{formatINR(data.additionalRevenueRecovered)}
@@ -171,16 +164,16 @@ export const BatchComparison = () => {
 
           {/* Batch Run Results output if available */}
           {batchResults && (
-            <div className="ledger-card p-6 rounded-lg">
+            <div className="ledger-card p-6 rounded-sm">
               <h3 className="font-serif font-bold text-lg text-[#0F2042] uppercase tracking-wider mb-4 border-b border-[#E2D9C8] pb-2">
                 BATCH EXECUTION RESULTS ({batchResults.processedCount} CASES PROCESSED)
               </h3>
               <div className="max-h-60 overflow-y-auto space-y-2 font-mono text-xs">
                 {batchResults.results.map((res, idx) => (
-                  <div key={idx} className="p-2.5 bg-[#F8F4EA] border border-[#E2D9C8] rounded flex items-center justify-between">
+                  <div key={idx} className="p-2.5 bg-[#F8F4EA] border border-[#E2D9C8] rounded-sm flex items-center justify-between">
                     <div>
                       <span className="font-bold text-[#0F2042]">Case #{res.caseId?.toString().slice(-8)}</span>
-                      <span className="ml-2 text-[#5A6578]">• {res.recommendedAction}</span>
+                      <span className="ml-2 text-[#5A6578]">· {res.recommendedAction}</span>
                       <p className="text-[11px] text-[#1A2B4C] mt-0.5">{res.reason}</p>
                     </div>
                     <span className="font-bold text-[#1E7E45]">{res.status}</span>

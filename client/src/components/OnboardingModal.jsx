@@ -1,12 +1,11 @@
 import React, { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { uploadIngestData } from '../services/api';
-import { ShieldCheck, Sparkles, Upload, ArrowRight, CheckCircle2, ListFilter, BarChart2, Eye, Play } from 'lucide-react';
 
 export const OnboardingModal = ({ isOpen, onComplete, onSkipToDemo }) => {
   const { setOnboardingDone } = useAuth();
   
-  const [step, setStep] = useState(1); // 1: Welcome, 2: Upload, 3: Result, 4: Walkthrough
+  const [step, setStep] = useState(1);
   const [rawText, setRawText] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -30,7 +29,7 @@ Neha Verma, 1499, cart_abandoned, null`;
       const res = await uploadIngestData(rawText);
       if (res.success) {
         setSummary(res);
-        setStep(3); // Result modal
+        setStep(3);
       }
     } catch (err) {
       setError(err.response?.data?.error || err.message || 'Data processing failed');
@@ -50,8 +49,8 @@ Neha Verma, 1499, cart_abandoned, null`;
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs">
-      <div className="ledger-paper max-w-xl w-full p-8 rounded-xl border-2 border-[#1A2B4C] shadow-2xl relative">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#0F2042]/40">
+      <div className="ledger-paper max-w-xl w-full p-8 rounded-sm border-2 border-[#1A2B4C] relative">
         
         {/* Step Indicator */}
         <div className="flex items-center justify-between font-mono text-xs border-b border-[#E2D9C8] pb-3 mb-6">
@@ -69,10 +68,6 @@ Neha Verma, 1499, cart_abandoned, null`;
         {/* STEP 1: WELCOME */}
         {step === 1 && (
           <div className="space-y-6 text-center">
-            <div className="inline-flex p-3 bg-[#1A2B4C] text-[#F6F1E5] rounded-xl border border-[#0F2042]">
-              <ShieldCheck className="w-10 h-10 text-[#D9383A]" />
-            </div>
-
             <div>
               <h3 className="font-serif font-extrabold text-2xl text-[#0F2042]">
                 WELCOME TO REVIVE
@@ -82,24 +77,22 @@ Neha Verma, 1499, cart_abandoned, null`;
               </p>
             </div>
 
-            <p className="font-mono text-xs text-[#0F2042] leading-relaxed bg-[#FFFDF8] p-4 rounded border border-[#E2D9C8]">
+            <p className="font-mono text-xs text-[#0F2042] leading-relaxed bg-[#FFFDF8] p-4 rounded-sm border border-[#E2D9C8]">
               Let's get your revenue data in! You can paste raw CSV records or unpaid invoice notes, and our AI agent will extract customer details, compute risk scores, and run recovery actions.
             </p>
 
             <div className="flex flex-col sm:flex-row gap-3 pt-2">
               <button
                 onClick={() => { setRawText(sampleData); setStep(2); }}
-                className="flex-1 flex items-center justify-center space-x-2 py-3 bg-[#D9383A] hover:bg-[#B82525] text-white rounded font-mono text-xs font-bold uppercase tracking-wider transition-all shadow-md"
+                className="flex-1 py-3 bg-[#D9383A] hover:bg-[#B82525] text-white rounded-sm font-mono text-xs font-bold uppercase tracking-wider transition-all"
               >
-                <Upload className="w-4 h-4" />
                 <span>UPLOAD / PASTE DATA</span>
               </button>
 
               <button
                 onClick={handleSkipDemo}
-                className="flex-1 flex items-center justify-center space-x-2 py-3 bg-[#E2D9C8] hover:bg-[#D5C9B3] text-[#0F2042] rounded font-mono text-xs font-bold transition-all"
+                className="flex-1 py-3 bg-[#E2D9C8] hover:bg-[#D5C9B3] text-[#0F2042] rounded-sm font-mono text-xs font-bold transition-all"
               >
-                <Play className="w-4 h-4 text-[#D9383A]" />
                 <span>LOAD PRE-SEEDED DEMO</span>
               </button>
             </div>
@@ -119,7 +112,7 @@ Neha Verma, 1499, cart_abandoned, null`;
             </div>
 
             {error && (
-              <div className="bg-[#FADBD8] border border-[#B82525] text-[#B82525] p-3 rounded">
+              <div className="bg-[#FADBD8] border border-[#B82525] text-[#B82525] p-3 rounded-sm">
                 {error}
               </div>
             )}
@@ -129,14 +122,14 @@ Neha Verma, 1499, cart_abandoned, null`;
               required
               value={rawText}
               onChange={(e) => setRawText(e.target.value)}
-              className="w-full p-3 bg-[#FFFDF8] border border-[#E2D9C8] rounded focus:outline-none focus:border-[#1A2B4C] leading-relaxed"
+              className="w-full p-3 bg-[#FFFDF8] border border-[#E2D9C8] rounded-sm focus:outline-none focus:border-[#1A2B4C] leading-relaxed"
             />
 
             <div className="flex justify-between items-center pt-2">
               <button
                 type="button"
                 onClick={() => setStep(1)}
-                className="px-4 py-2 bg-[#E2D9C8] text-[#0F2042] rounded font-bold"
+                className="px-4 py-2 bg-[#E2D9C8] text-[#0F2042] rounded-sm font-bold"
               >
                 BACK
               </button>
@@ -144,9 +137,8 @@ Neha Verma, 1499, cart_abandoned, null`;
               <button
                 type="submit"
                 disabled={loading}
-                className="flex items-center space-x-2 px-6 py-2.5 bg-[#D9383A] hover:bg-[#B82525] disabled:opacity-50 text-white rounded font-bold uppercase tracking-wider"
+                className="px-6 py-2.5 bg-[#D9383A] hover:bg-[#B82525] disabled:opacity-50 text-white rounded-sm font-bold uppercase tracking-wider"
               >
-                <Sparkles className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
                 <span>{loading ? 'LLM INGESTING...' : 'PROCESS DATA'}</span>
               </button>
             </div>
@@ -156,12 +148,8 @@ Neha Verma, 1499, cart_abandoned, null`;
         {/* STEP 3: RESULT */}
         {step === 3 && summary && (
           <div className="space-y-6 text-center font-mono">
-            <div className="inline-flex p-3 bg-[#EBF7F0] rounded-full text-[#1E7E45]">
-              <CheckCircle2 className="w-10 h-10" />
-            </div>
-
             <div>
-              <h3 className="font-serif font-extrabold text-2xl text-[#0F2042]">
+              <h3 className="font-serif font-extrabold text-2xl text-[#1E7E45]">
                 DATA EXTRACTION COMPLETE!
               </h3>
               <p className="font-mono text-xs text-[#5A6578] mt-1">
@@ -170,15 +158,15 @@ Neha Verma, 1499, cart_abandoned, null`;
             </div>
 
             <div className="grid grid-cols-3 gap-3 my-4">
-              <div className="bg-[#FFFDF8] p-3 rounded border border-[#E2D9C8]">
+              <div className="bg-[#FFFDF8] p-3 rounded-sm border border-[#E2D9C8]">
                 <span className="text-[#5A6578] text-[10px] block">RECORDS EXTRACTED</span>
                 <span className="font-bold text-xl text-[#0F2042]">{summary.recordsFound}</span>
               </div>
-              <div className="bg-[#FFFDF8] p-3 rounded border border-[#E2D9C8]">
+              <div className="bg-[#FFFDF8] p-3 rounded-sm border border-[#E2D9C8]">
                 <span className="text-[#5A6578] text-[10px] block">NEW CUSTOMERS</span>
                 <span className="font-bold text-xl text-[#1E7E45]">{summary.customersCreated}</span>
               </div>
-              <div className="bg-[#FFFDF8] p-3 rounded border border-[#E2D9C8]">
+              <div className="bg-[#FFFDF8] p-3 rounded-sm border border-[#E2D9C8]">
                 <span className="text-[#5A6578] text-[10px] block">AT-RISK TOTAL</span>
                 <span className="font-bold text-xl text-[#D9383A]">₹{summary.totalAtRisk?.toLocaleString('en-IN')}</span>
               </div>
@@ -186,10 +174,9 @@ Neha Verma, 1499, cart_abandoned, null`;
 
             <button
               onClick={() => setStep(4)}
-              className="w-full py-3 bg-[#1A2B4C] hover:bg-[#0F2042] text-white rounded font-bold uppercase tracking-wider flex items-center justify-center space-x-2"
+              className="w-full py-3 bg-[#1A2B4C] hover:bg-[#0F2042] text-white rounded-sm font-bold uppercase tracking-wider"
             >
-              <span>PROCEED TO PANEL WALKTHROUGH</span>
-              <ArrowRight className="w-4 h-4" />
+              <span>PROCEED TO PANEL WALKTHROUGH →</span>
             </button>
           </div>
         )}
@@ -207,37 +194,27 @@ Neha Verma, 1499, cart_abandoned, null`;
             </div>
 
             <div className="space-y-3">
-              <div className="p-3 bg-[#FFFDF8] border-l-4 border-l-[#1A2B4C] rounded flex items-start space-x-3">
-                <BarChart2 className="w-5 h-5 text-[#1A2B4C] shrink-0 mt-0.5" />
-                <div>
-                  <strong className="text-[#0F2042] block">1. DASHBOARD & FUNNEL</strong>
-                  <span>Monitors overall recovered amount, recovery rate %, 4-stage funnel (Detect → Diagnose → Contact → Recover), and pitch proof metrics.</span>
-                </div>
+              <div className="p-3 bg-[#FFFDF8] border-l-4 border-l-[#1A2B4C] rounded-sm">
+                <strong className="text-[#0F2042] block font-bold">1. DASHBOARD & FUNNEL</strong>
+                <span>Monitors overall recovered amount, recovery rate %, 4-stage funnel register, and pitch proof metrics.</span>
               </div>
 
-              <div className="p-3 bg-[#FFFDF8] border-l-4 border-l-[#1E7E45] rounded flex items-start space-x-3">
-                <ListFilter className="w-5 h-5 text-[#1E7E45] shrink-0 mt-0.5" />
-                <div>
-                  <strong className="text-[#0F2042] block">2. RECOVERY QUEUE</strong>
-                  <span>Filterable register table listing every single case the agent is working on across payment, cart, subscription, and invoice failures.</span>
-                </div>
+              <div className="p-3 bg-[#FFFDF8] border-l-4 border-l-[#1E7E45] rounded-sm">
+                <strong className="text-[#0F2042] block font-bold">2. RECOVERY QUEUE</strong>
+                <span>Filterable register table listing every case across payment, cart, subscription, and invoice failures.</span>
               </div>
 
-              <div className="p-3 bg-[#FFFDF8] border-l-4 border-l-[#D9383A] rounded flex items-start space-x-3">
-                <Eye className="w-5 h-5 text-[#D9383A] shrink-0 mt-0.5" />
-                <div>
-                  <strong className="text-[#0F2042] block">3. CASE DIAGNOSIS & AUDIT TRAIL</strong>
-                  <span>Click any case to view the agent's plain-language reasoning, adaptive Hinglish tone, guardrails status, and execute real email/payment actions.</span>
-                </div>
+              <div className="p-3 bg-[#FFFDF8] border-l-4 border-l-[#D9383A] rounded-sm">
+                <strong className="text-[#0F2042] block font-bold">3. CASE DIAGNOSIS & AUDIT TRAIL</strong>
+                <span>Click any case to view plain-language reasoning, adaptive Hinglish tone, guardrails status, and execute real actions.</span>
               </div>
             </div>
 
             <button
               onClick={handleFinishOnboarding}
-              className="w-full py-3 bg-[#D9383A] hover:bg-[#B82525] text-white rounded font-bold uppercase tracking-wider flex items-center justify-center space-x-2"
+              className="w-full py-3 bg-[#D9383A] hover:bg-[#B82525] text-white rounded-sm font-bold uppercase tracking-wider"
             >
-              <span>ENTER REVIVE RECOVERY PANEL</span>
-              <ArrowRight className="w-4 h-4" />
+              <span>ENTER REVIVE RECOVERY PANEL →</span>
             </button>
           </div>
         )}

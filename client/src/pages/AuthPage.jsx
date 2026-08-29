@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
-import { ShieldCheck, ArrowRight, UserCheck, Building2, PlayCircle, Lock, Mail, User as UserIcon } from 'lucide-react';
 
 export const AuthPage = ({ onAuthSuccess }) => {
   const { login, signup, enterDemoMode } = useAuth();
@@ -46,26 +45,21 @@ export const AuthPage = ({ onAuthSuccess }) => {
 
   return (
     <div className="min-h-screen bg-[#FBF8EF] flex items-center justify-center p-4">
-      <div className="ledger-paper max-w-lg w-full p-8 rounded-xl border-2 border-[#1A2B4C] shadow-2xl relative overflow-hidden">
+      <div className="ledger-paper max-w-lg w-full p-8 rounded-sm border-2 border-[#1A2B4C] relative">
         
-        {/* Header Logo */}
-        <div className="flex items-center space-x-3 mb-6 border-b-2 border-[#1A2B4C] pb-4">
-          <div className="bg-[#1A2B4C] text-[#F6F1E5] p-2.5 rounded border border-[#0F2042]">
-            <ShieldCheck className="w-8 h-8 text-[#D9383A]" />
+        {/* Header Wordmark Logo */}
+        <div className="border-b-2 border-[#1A2B4C] pb-4 mb-6">
+          <div className="flex items-center space-x-2">
+            <h1 className="font-serif font-extrabold text-3xl tracking-tight text-[#0F2042]">
+              REVIVE
+            </h1>
+            <span className="font-mono text-xs px-2 py-0.5 bg-[#D9383A] text-white rounded-sm uppercase font-bold tracking-wider">
+              AI Revenue Agent
+            </span>
           </div>
-          <div>
-            <div className="flex items-center space-x-2">
-              <h1 className="font-serif font-extrabold text-3xl tracking-tight text-[#0F2042]">
-                REVIVE
-              </h1>
-              <span className="font-mono text-xs px-2 py-0.5 bg-[#D9383A] text-white rounded uppercase font-bold tracking-wider">
-                AI Revenue Agent
-              </span>
-            </div>
-            <p className="font-serif italic text-xs text-[#5A6578]">
-              Razorpay Buildathon — Track 03: AI Revenue Recovery
-            </p>
-          </div>
+          <p className="font-serif italic text-xs text-[#5A6578] mt-1">
+            Razorpay Buildathon — Track 03: AI Revenue Recovery
+          </p>
         </div>
 
         {/* Tab Switcher */}
@@ -91,7 +85,7 @@ export const AuthPage = ({ onAuthSuccess }) => {
         </div>
 
         {error && (
-          <div className="bg-[#FADBD8] border border-[#B82525] text-[#B82525] p-3 rounded font-mono text-xs mb-4">
+          <div className="bg-[#FADBD8] border border-[#B82525] text-[#B82525] p-3 rounded-sm font-mono text-xs mb-4">
             {error}
           </div>
         )}
@@ -102,17 +96,14 @@ export const AuthPage = ({ onAuthSuccess }) => {
             <>
               <div>
                 <label className="block text-[#5A6578] uppercase font-bold mb-1">Your Full Name</label>
-                <div className="relative">
-                  <UserIcon className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-[#5A6578]" />
-                  <input
-                    type="text"
-                    required
-                    placeholder="e.g. Rohan Gupta"
-                    value={name}
-                    onChange={(e) => setName(e.target.value)}
-                    className="w-full pl-9 pr-3 py-2 bg-[#FFFDF8] border border-[#E2D9C8] rounded focus:outline-none focus:border-[#1A2B4C]"
-                  />
-                </div>
+                <input
+                  type="text"
+                  required
+                  placeholder="e.g. Rohan Gupta"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  className="w-full px-3 py-2 bg-[#FFFDF8] border border-[#E2D9C8] rounded-sm focus:outline-none focus:border-[#1A2B4C]"
+                />
               </div>
 
               <div>
@@ -121,26 +112,24 @@ export const AuthPage = ({ onAuthSuccess }) => {
                   <button
                     type="button"
                     onClick={() => setAccountType('individual')}
-                    className={`flex items-center justify-center space-x-2 p-2.5 border rounded font-bold transition-all ${
+                    className={`p-2.5 border rounded-sm font-bold transition-all text-center ${
                       accountType === 'individual' 
-                        ? 'border-[#1A2B4C] bg-[#1A2B4C] text-white shadow-xs' 
+                        ? 'border-[#1A2B4C] bg-[#1A2B4C] text-white' 
                         : 'border-[#E2D9C8] bg-[#FFFDF8] text-[#5A6578]'
                     }`}
                   >
-                    <UserCheck className="w-4 h-4" />
                     <span>INDIVIDUAL</span>
                   </button>
 
                   <button
                     type="button"
                     onClick={() => setAccountType('business')}
-                    className={`flex items-center justify-center space-x-2 p-2.5 border rounded font-bold transition-all ${
+                    className={`p-2.5 border rounded-sm font-bold transition-all text-center ${
                       accountType === 'business' 
-                        ? 'border-[#1A2B4C] bg-[#1A2B4C] text-white shadow-xs' 
+                        ? 'border-[#1A2B4C] bg-[#1A2B4C] text-white' 
                         : 'border-[#E2D9C8] bg-[#FFFDF8] text-[#5A6578]'
                     }`}
                   >
-                    <Building2 className="w-4 h-4" />
                     <span>BUSINESS</span>
                   </button>
                 </div>
@@ -154,7 +143,7 @@ export const AuthPage = ({ onAuthSuccess }) => {
                     placeholder="e.g. Apex FinTech Solutions"
                     value={businessName}
                     onChange={(e) => setBusinessName(e.target.value)}
-                    className="w-full px-3 py-2 bg-[#FFFDF8] border border-[#E2D9C8] rounded focus:outline-none focus:border-[#1A2B4C]"
+                    className="w-full px-3 py-2 bg-[#FFFDF8] border border-[#E2D9C8] rounded-sm focus:outline-none focus:border-[#1A2B4C]"
                   />
                 </div>
               )}
@@ -163,41 +152,34 @@ export const AuthPage = ({ onAuthSuccess }) => {
 
           <div>
             <label className="block text-[#5A6578] uppercase font-bold mb-1">Email Address</label>
-            <div className="relative">
-              <Mail className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-[#5A6578]" />
-              <input
-                type="email"
-                required
-                placeholder="name@company.com"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                className="w-full pl-9 pr-3 py-2 bg-[#FFFDF8] border border-[#E2D9C8] rounded focus:outline-none focus:border-[#1A2B4C]"
-              />
-            </div>
+            <input
+              type="email"
+              required
+              placeholder="name@company.com"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              className="w-full px-3 py-2 bg-[#FFFDF8] border border-[#E2D9C8] rounded-sm focus:outline-none focus:border-[#1A2B4C]"
+            />
           </div>
 
           <div>
             <label className="block text-[#5A6578] uppercase font-bold mb-1">Password</label>
-            <div className="relative">
-              <Lock className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-[#5A6578]" />
-              <input
-                type="password"
-                required
-                placeholder="••••••••"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                className="w-full pl-9 pr-3 py-2 bg-[#FFFDF8] border border-[#E2D9C8] rounded focus:outline-none focus:border-[#1A2B4C]"
-              />
-            </div>
+            <input
+              type="password"
+              required
+              placeholder="••••••••"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              className="w-full px-3 py-2 bg-[#FFFDF8] border border-[#E2D9C8] rounded-sm focus:outline-none focus:border-[#1A2B4C]"
+            />
           </div>
 
           <button
             type="submit"
             disabled={loading}
-            className="w-full flex items-center justify-center space-x-2 py-3 bg-[#D9383A] hover:bg-[#B82525] text-white rounded font-bold uppercase tracking-wider transition-all shadow-md mt-4"
+            className="w-full py-3 bg-[#D9383A] hover:bg-[#B82525] text-white rounded-sm font-bold uppercase tracking-wider transition-all mt-4"
           >
-            <span>{loading ? 'PROCESSING...' : (isLogin ? 'SIGN IN TO REGISTER' : 'CREATE ACCOUNT & START')}</span>
-            <ArrowRight className="w-4 h-4" />
+            <span>{loading ? 'PROCESSING...' : (isLogin ? 'SIGN IN TO REGISTER →' : 'CREATE ACCOUNT & START →')}</span>
           </button>
         </form>
 
@@ -208,10 +190,9 @@ export const AuthPage = ({ onAuthSuccess }) => {
           <button
             type="button"
             onClick={handleDemoClick}
-            className="w-full flex items-center justify-center space-x-2 py-2.5 bg-[#E2D9C8] hover:bg-[#D5C9B3] text-[#0F2042] border border-[#BDB099] rounded font-mono text-xs font-bold transition-all shadow-xs"
+            className="w-full py-2.5 bg-[#E2D9C8] hover:bg-[#D5C9B3] text-[#0F2042] border border-[#BDB099] rounded-sm font-mono text-xs font-bold transition-all"
           >
-            <PlayCircle className="w-4 h-4 text-[#D9383A]" />
-            <span>ENTER DEMO MODE (PRE-SEEDED DATA)</span>
+            <span>ENTER DEMO MODE (PRE-SEEDED DATA) →</span>
           </button>
         </div>
 

@@ -1,6 +1,4 @@
 import React from 'react';
-import { Clock, Wrench, ShieldAlert, CheckCircle2, MessageSquare, AlertCircle } from 'lucide-react';
-import { StampBadge } from './StampBadge';
 
 export const CaseTimeline = ({ actions }) => {
   if (!actions || actions.length === 0) {
@@ -12,7 +10,7 @@ export const CaseTimeline = ({ actions }) => {
   }
 
   return (
-    <div className="ledger-card p-6 rounded-lg">
+    <div className="ledger-card p-6 rounded-sm">
       <h3 className="font-serif font-bold text-lg text-[#0F2042] uppercase tracking-wider mb-4 border-b border-[#E2D9C8] pb-2 flex items-center justify-between">
         <span>AGENT ACTION AUDIT TRAIL</span>
         <span className="font-mono text-xs text-[#D9383A] font-bold">{actions.length} ACTIONS LOGGED</span>
@@ -28,33 +26,26 @@ export const CaseTimeline = ({ actions }) => {
           });
 
           const isGuardrail = act.tool?.includes('guardrail');
-          const isReminder = act.tool?.includes('reminder');
           const isPayment = act.action?.includes('PAYMENT');
 
           return (
-            <div key={act._id || index} className="relative pl-12 group">
+            <div key={act._id || index} className="relative pl-12">
               {/* Timeline marker node */}
-              <div className={`absolute left-4 top-1.5 -translate-x-1/2 w-5 h-5 rounded-full border-2 flex items-center justify-between justify-center ${
+              <div className={`absolute left-4 top-1.5 -translate-x-1/2 w-4 h-4 rounded-full border-2 font-mono text-[10px] flex items-center justify-center font-bold ${
                 isGuardrail 
                   ? 'bg-[#B82525] border-white text-white' 
                   : isPayment 
                   ? 'bg-[#1E7E45] border-white text-white'
                   : 'bg-[#1A2B4C] border-white text-white'
               }`}>
-                {isGuardrail ? (
-                  <ShieldAlert className="w-3 h-3" />
-                ) : isPayment ? (
-                  <CheckCircle2 className="w-3 h-3" />
-                ) : (
-                  <Wrench className="w-3 h-3" />
-                )}
+                {index + 1}
               </div>
 
               {/* Action content card */}
-              <div className="bg-[#FFFDF8] border border-[#E2D9C8] p-4 rounded shadow-xs">
+              <div className="bg-[#FFFDF8] border border-[#E2D9C8] p-4 rounded-sm">
                 <div className="flex flex-wrap items-center justify-between gap-2 border-b border-[#F0E6D4] pb-2 mb-2">
                   <div className="flex items-center space-x-2">
-                    <span className="font-mono font-bold text-xs uppercase px-2 py-0.5 bg-[#1A2B4C] text-white rounded">
+                    <span className="font-mono font-bold text-xs uppercase px-2 py-0.5 bg-[#1A2B4C] text-white rounded-sm">
                       TOOL: {act.tool}
                     </span>
                     <span className="font-mono font-extrabold text-sm text-[#0F2042]">
@@ -62,9 +53,8 @@ export const CaseTimeline = ({ actions }) => {
                     </span>
                   </div>
 
-                  <span className="font-mono text-xs text-[#5A6578] flex items-center space-x-1">
-                    <Clock className="w-3.5 h-3.5 text-[#D9383A]" />
-                    <span>{dateStr}</span>
+                  <span className="font-mono text-xs text-[#5A6578]">
+                    {dateStr}
                   </span>
                 </div>
 
@@ -75,7 +65,7 @@ export const CaseTimeline = ({ actions }) => {
 
                 {/* Handwritten style Hinglish callout if reminder */}
                 {act.reason?.includes('"') && (
-                  <div className="bg-[#F8F4EA] border-l-4 border-[#C67D0A] p-3 rounded my-2">
+                  <div className="bg-[#F8F4EA] border-l-4 border-[#C67D0A] p-3 rounded-sm my-2">
                     <span className="font-serif text-xs uppercase font-bold text-[#C67D0A] block mb-1">
                       Hinglish Message Sent to Customer:
                     </span>

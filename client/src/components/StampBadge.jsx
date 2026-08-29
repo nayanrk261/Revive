@@ -9,18 +9,15 @@ export const StampBadge = ({ status, text }) => {
   if (displayStatus === 'recovered') {
     stampStyle = 'stamp-recovered';
     label = label || 'RECOVERED';
-  } else if (displayStatus === 'escalated' || displayStatus === 'high') {
+  } else if (displayStatus === 'escalated') {
     stampStyle = 'stamp-escalated';
-    label = label || (displayStatus === 'high' ? 'HIGH RISK' : 'ESCALATED');
+    label = label || 'ESCALATED';
   } else if (displayStatus === 'stopped') {
     stampStyle = 'stamp-stopped';
     label = label || 'STOPPED';
-  } else if (displayStatus === 'medium') {
+  } else {
     stampStyle = 'stamp-open';
-    label = label || 'MED RISK';
-  } else if (displayStatus === 'low') {
-    stampStyle = 'stamp-recovered';
-    label = label || 'LOW RISK';
+    label = label || 'OPEN';
   }
 
   return (

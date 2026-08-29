@@ -10,66 +10,73 @@
     linear-gradient(90deg, transparent 85px, #D9383A 85px, #D9383A 86px, transparent 86px),
     linear-gradient(#E8E1D3 1px, transparent 1px);
   background-size: 100% 100%, 100% 100%, 100% 2.2rem;
-  box-shadow: inset 0 0 40px rgba(0,0,0,0.03), 0 10px 30px rgba(0,0,0,0.08);
+  border: 1px solid #D5C9B3;
 }
 
 .ledger-card {
   background: #FFFDF8;
-  border: 1px solid #E2D9C8;
-  box-shadow: 2px 4px 12px rgba(15, 32, 66, 0.05);
+  border: 1px solid #D5C9B3;
+  border-radius: 2px;
 }
 
 .ledger-table th {
-  border-bottom: 2px solid #1A2B4C;
+  border-bottom: 2px solid #0F2042;
   font-family: 'Playfair Display', Georgia, serif;
   color: #0F2042;
   text-transform: uppercase;
   letter-spacing: 0.05em;
+  font-weight: 800;
 }
 
 .ledger-table td {
-  border-bottom: 1px solid #EBDDC8;
+  border-bottom: 1px solid #E5DCCB;
   font-family: 'Courier Prime', monospace;
 }
 
-/* Rubber Stamp Styling */
+/* Authentic Oval Rubber Stamp Styling */
 .rubber-stamp {
   display: inline-block;
-  padding: 0.25rem 0.75rem;
+  padding: 4px 14px;
   font-family: 'Courier Prime', monospace;
   font-weight: 800;
+  font-size: 0.75rem;
   text-transform: uppercase;
-  border: 3px double currentColor;
-  border-radius: 4px;
-  transform: rotate(-3deg);
-  letter-spacing: 0.1em;
-  box-shadow: 0 0 0 2px rgba(255,255,255,0.4);
-  mask-image: radial-gradient(circle, black 70%, transparent 100%);
+  border: 2.5px solid currentColor;
+  border-radius: 50% / 40%;   /* authentic oval stamp shape */
+  transform: rotate(-6deg);
+  letter-spacing: 0.08em;
+  opacity: 0.92;
   user-select: none;
+  background: transparent;
 }
 
 .stamp-recovered {
   color: #1E7E45;
   border-color: #1E7E45;
-  background: rgba(30, 126, 69, 0.08);
 }
 
 .stamp-escalated {
   color: #B82525;
   border-color: #B82525;
-  background: rgba(184, 37, 37, 0.08);
 }
 
 .stamp-stopped {
   color: #6B38AC;
   border-color: #6B38AC;
-  background: rgba(107, 56, 172, 0.08);
 }
 
 .stamp-open {
   color: #C67D0A;
   border-color: #C67D0A;
-  background: rgba(198, 125, 10, 0.08);
+}
+
+/* Perforation Divider Strip between Funnel Segments */
+.ledger-perforation {
+  width: 1px;
+  background-image: linear-gradient(to bottom, #D5C9B3 40%, rgba(255,255,255,0) 0%);
+  background-position: right;
+  background-size: 1px 8px;
+  background-repeat: repeat-y;
 }
 
 /* Hinglish Handwritten Note */
