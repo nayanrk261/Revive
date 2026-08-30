@@ -194,7 +194,7 @@ export const PublicPaymentPage = ({ eventId }) => {
       
       {/* Portal Header */}
       <header className="border-b-2 border-[#1A2B4C] bg-[#FAF6EC] py-4 px-6 shadow-sm">
-        <div className="max-w-3xl mx-auto flex items-center justify-between">
+        <div className="max-w-3xl mx-auto flex items-center justify-between flex-wrap gap-2">
           <div className="flex items-center space-x-3">
             <span className="font-serif font-extrabold text-xl text-[#0F2042] tracking-wider">
               REVIVE
@@ -290,7 +290,7 @@ export const PublicPaymentPage = ({ eventId }) => {
         {/* Transaction Ledger Card */}
         <div className="ledger-card p-6 rounded-sm bg-[#FAF6EC] border-2 border-[#1A2B4C] space-y-6">
           
-          <div className="flex items-center justify-between border-b border-[#E2D9C8] pb-4">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 border-b border-[#E2D9C8] pb-4">
             <div>
               <span className="font-mono text-[10px] text-[#5A6578] block font-bold uppercase">
                 TRANSACTION TYPE
@@ -311,7 +311,7 @@ export const PublicPaymentPage = ({ eventId }) => {
           </div>
 
           {/* Amount Due Display */}
-          <div className="bg-[#FFFDF8] p-5 rounded-sm border border-[#E2D9C8] flex items-center justify-between">
+          <div className="bg-[#FFFDF8] p-5 rounded-sm border border-[#E2D9C8] flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
             <div>
               <span className="font-mono text-xs text-[#5A6578] block font-bold uppercase">
                 TOTAL AMOUNT DUE
@@ -321,7 +321,7 @@ export const PublicPaymentPage = ({ eventId }) => {
               </span>
             </div>
 
-            <div className="font-mono text-3xl font-extrabold text-[#D9383A]">
+            <div className="font-mono text-2xl sm:text-3xl font-extrabold text-[#D9383A]">
               ₹{eventData.amount.toLocaleString('en-IN')}
             </div>
           </div>

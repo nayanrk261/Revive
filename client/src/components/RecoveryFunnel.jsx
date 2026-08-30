@@ -30,7 +30,7 @@ export const RecoveryFunnel = ({ funnel }) => {
           const pct = detected > 0 ? ((st.count / detected) * 100).toFixed(0) : 0;
           return (
             <React.Fragment key={idx}>
-              <div className="flex-1 p-5 flex flex-col justify-between relative">
+              <div className="flex-1 p-4 md:p-5 flex flex-col justify-between relative">
                 
                 {/* Red Ink Folio Number */}
                 <div className="flex items-center justify-between mb-3">
@@ -54,9 +54,12 @@ export const RecoveryFunnel = ({ funnel }) => {
 
               </div>
 
-              {/* Perforation divider line between segments */}
+              {/* Perforation divider line between segments — vertical on desktop, horizontal on mobile */}
               {idx < 3 && (
-                <div className="hidden md:block w-px bg-[#D5C9B3] my-3 border-r border-dashed border-[#BDB099]" />
+                <>
+                  <div className="hidden md:block w-px bg-[#D5C9B3] my-3 border-r border-dashed border-[#BDB099]" />
+                  <div className="md:hidden h-px bg-[#D5C9B3] mx-4 border-b border-dashed border-[#BDB099]" />
+                </>
               )}
             </React.Fragment>
           );

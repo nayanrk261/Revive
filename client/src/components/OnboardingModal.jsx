@@ -50,7 +50,7 @@ Neha Verma, 1499, cart_abandoned, null`;
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#0F2042]/40">
-      <div className="ledger-paper max-w-xl w-full p-8 rounded-sm border-2 border-[#1A2B4C] relative">
+      <div className="ledger-paper max-w-xl w-full p-8 rounded-sm border-2 border-[#1A2B4C] relative max-h-[90vh] overflow-y-auto">
         
         {/* Step Indicator */}
         <div className="flex items-center justify-between font-mono text-xs border-b border-[#E2D9C8] pb-3 mb-6">
@@ -157,7 +157,7 @@ Neha Verma, 1499, cart_abandoned, null`;
               </p>
             </div>
 
-            <div className="grid grid-cols-3 gap-3 my-4">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 my-4">
               <div className="bg-[#FFFDF8] p-3 rounded-sm border border-[#E2D9C8]">
                 <span className="text-[#5A6578] text-[10px] block">RECORDS EXTRACTED</span>
                 <span className="font-bold text-xl text-[#0F2042]">{summary.recordsFound}</span>

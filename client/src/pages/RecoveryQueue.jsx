@@ -95,8 +95,8 @@ export const RecoveryQueue = ({ onSelectCase }) => {
         </div>
       </div>
 
-      {/* Ledger Register Table */}
-      <div className="ledger-card rounded-sm overflow-hidden border border-[#E2D9C8]">
+      {/* Ledger Register — Desktop Table (md+) */}
+      <div className="ledger-card rounded-sm overflow-hidden border border-[#E2D9C8] hidden md:block">
         {loading ? (
           <div className="p-12 text-center font-mono text-[#5A6578]">Loading queue records...</div>
         ) : filteredEvents.length === 0 ? (
@@ -194,6 +194,85 @@ export const RecoveryQueue = ({ onSelectCase }) => {
               </tbody>
             </table>
           </div>
+        )}
+      </div>
+
+      {/* Ledger Register — Mobile Card List (below md) */}
+      <div className="md:hidden space-y-3">
+        {loading ? (
+          <div className="p-12 text-center font-mono text-[#5A6578]">Loading queue records...</div>
+        ) : filteredEvents.length === 0 ? (
+          <div className="p-12 text-center font-mono text-[#5A6578]">No revenue disruption records match filters.</div>
+        ) : (
+          filteredEvents.map((ev) => {
+            const recCase = ev.case;
+            const customer = ev.customerId;
+            const reliabilityPct = Math.round((customer?.paymentHistory?.reliabilityScore || 0.7) * 100);
+
+            return (
+              <div
+                key={ev._id}
+                className="ledger-card rounded-sm border border-[#E2D9C8] p-4 space-y-3"
+                onClick={() => recCase && onSelectCase(recCase._id)}
+              >
+                {/* Top row: Customer name + Status stamp */}
+                <div className="flex items-start justify-between gap-2">
+                  <div className="min-w-0">
+                    <div className="font-serif font-bold text-sm text-[#0F2042] truncate">
+                      {customer?.name || 'Unknown Customer'}
+                    </div>
+                    <div className="font-mono text-[11px] text-[#5A6578]">
+                      #{ev._id.toString().slice(-8).toUpperCase()} · {ev.ageInHours}h ago
+                    </div>
+                  </div>
+                  <div className="shrink-0">
+                    <StampBadge status={ev.status} />
+                  </div>
+                </div>
+
+                {/* Detail rows */}
+                <div className="grid grid-cols-2 gap-2 font-mono text-xs">
+                  <div className="bg-[#F8F4EA] p-2 rounded-sm border border-[#E2D9C8]">
+                    <span className="text-[10px] text-[#5A6578] block font-bold uppercase">AMOUNT</span>
+                    <span className="font-extrabold text-sm text-[#0F2042]">₹{ev.amount.toLocaleString('en-IN')}</span>
+                  </div>
+                  <div className="bg-[#F8F4EA] p-2 rounded-sm border border-[#E2D9C8]">
+                    <span className="text-[10px] text-[#5A6578] block font-bold uppercase">TYPE</span>
+                    <span className="font-semibold text-[#0F2042]">{getTypeLabel(ev.type)}</span>
+                  </div>
+                  <div className="bg-[#F8F4EA] p-2 rounded-sm border border-[#E2D9C8]">
+                    <span className="text-[10px] text-[#5A6578] block font-bold uppercase">RISK</span>
+                    <span className="font-bold text-[#0F2042]">
+                      {recCase?.riskLevel || 'MED'} ({recCase?.riskScore || 50}/100)
+                    </span>
+                  </div>
+                  <div className="bg-[#F8F4EA] p-2 rounded-sm border border-[#E2D9C8]">
+                    <span className="text-[10px] text-[#5A6578] block font-bold uppercase">RELIABILITY</span>
+                    <span className={`font-bold ${reliabilityPct >= 80 ? 'text-[#1E7E45]' : reliabilityPct < 40 ? 'text-[#B82525]' : 'text-[#C67D0A]'}`}>
+                      {reliabilityPct}%
+                    </span>
+                  </div>
+                </div>
+
+                {ev.failureReason && (
+                  <div className="font-mono text-[10px] text-[#D9383A]">
+                    Reason: {ev.failureReason}
+                  </div>
+                )}
+
+                {/* Full-width investigate button */}
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    if (recCase) onSelectCase(recCase._id);
+                  }}
+                  className="w-full font-mono text-xs px-3 py-2.5 bg-[#1A2B4C] hover:bg-[#0F2042] text-white rounded-sm font-bold transition-all"
+                >
+                  INVESTIGATE →
+                </button>
+              </div>
+            );
+          })
         )}
       </div>
 

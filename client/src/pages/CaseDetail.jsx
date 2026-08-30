@@ -220,7 +220,7 @@ export const CaseDetail = ({ caseId, onBack }) => {
 
           <div className="text-left md:text-right">
             <div className="font-serif text-xs text-[#5A6578] uppercase font-bold">AMOUNT AT RISK</div>
-            <div className="font-mono text-4xl font-extrabold text-[#0F2042]">
+            <div className="font-mono text-2xl sm:text-4xl font-extrabold text-[#0F2042]">
               ₹{ev.amount?.toLocaleString('en-IN')}
             </div>
             <div className="font-mono text-xs text-[#5A6578] mt-1">
@@ -322,12 +322,12 @@ export const CaseDetail = ({ caseId, onBack }) => {
         </div>
 
         {/* Action Controls - Outlined Buttons with Ledger Colors */}
-        <div className="flex flex-wrap items-center gap-3 border-t border-[#E2D9C8] pt-4">
+        <div className="flex flex-col sm:flex-row sm:flex-wrap items-stretch sm:items-center gap-3 border-t border-[#E2D9C8] pt-4">
           
           <button
             onClick={handleAnalyze}
             disabled={analyzing || caseData.status !== 'open'}
-            className="font-mono text-xs px-4 py-2.5 border-2 border-[#1A2B4C] bg-[#1A2B4C] text-white hover:bg-[#0F2042] disabled:opacity-50 rounded-sm font-bold transition-all"
+            className="w-full sm:w-auto font-mono text-xs px-4 py-2.5 border-2 border-[#1A2B4C] bg-[#1A2B4C] text-white hover:bg-[#0F2042] disabled:opacity-50 rounded-sm font-bold transition-all"
           >
             <span>{analyzing ? 'ANALYZING...' : 'RUN AGENT ANALYSIS'}</span>
           </button>
@@ -335,14 +335,14 @@ export const CaseDetail = ({ caseId, onBack }) => {
           <button
             onClick={handleExecute}
             disabled={executing || caseData.status !== 'open'}
-            className="font-mono text-xs px-4 py-2.5 border-2 border-[#D9383A] bg-[#D9383A] text-white hover:bg-[#B82525] disabled:opacity-50 rounded-sm font-bold transition-all"
+            className="w-full sm:w-auto font-mono text-xs px-4 py-2.5 border-2 border-[#D9383A] bg-[#D9383A] text-white hover:bg-[#B82525] disabled:opacity-50 rounded-sm font-bold transition-all"
           >
             <span>{executing ? 'EXECUTING...' : 'EXECUTE RECOMMENDED ACTION'}</span>
           </button>
 
           <button
             onClick={handleCopyPaymentLink}
-            className="font-mono text-xs px-4 py-2.5 border-2 border-[#1A2B4C] bg-[#FFFDF8] text-[#1A2B4C] hover:bg-[#1A2B4C] hover:text-white rounded-sm font-bold transition-all flex items-center gap-2"
+            className="w-full sm:w-auto font-mono text-xs px-4 py-2.5 border-2 border-[#1A2B4C] bg-[#FFFDF8] text-[#1A2B4C] hover:bg-[#1A2B4C] hover:text-white rounded-sm font-bold transition-all flex items-center justify-center gap-2"
           >
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
@@ -353,7 +353,7 @@ export const CaseDetail = ({ caseId, onBack }) => {
           <button
             onClick={handleSimulatePayment}
             disabled={paying || caseData.status === 'recovered'}
-            className="font-mono text-xs px-4 py-2.5 border-2 border-[#1E7E45] bg-[#1E7E45] text-white hover:bg-[#165E33] disabled:opacity-50 rounded-sm font-bold transition-all"
+            className="w-full sm:w-auto font-mono text-xs px-4 py-2.5 border-2 border-[#1E7E45] bg-[#1E7E45] text-white hover:bg-[#165E33] disabled:opacity-50 rounded-sm font-bold transition-all"
           >
             <span>{paying ? 'RECORDING...' : 'SIMULATE PAYMENT RECEIVED'}</span>
           </button>
@@ -361,7 +361,7 @@ export const CaseDetail = ({ caseId, onBack }) => {
           <button
             onClick={handleManualEscalate}
             disabled={escalating || caseData.status === 'escalated'}
-            className="font-mono text-xs px-4 py-2.5 border border-[#BDB099] bg-[#E2D9C8] text-[#B82525] hover:bg-[#D5C9B3] rounded-sm font-bold transition-all"
+            className="w-full sm:w-auto font-mono text-xs px-4 py-2.5 border border-[#BDB099] bg-[#E2D9C8] text-[#B82525] hover:bg-[#D5C9B3] rounded-sm font-bold transition-all"
           >
             <span>MANUALLY ESCALATE</span>
           </button>

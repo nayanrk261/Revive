@@ -40,7 +40,7 @@ Neha Verma, 1499, cart_abandoned, null, 8`;
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#0F2042]/40">
-      <div className="ledger-paper max-w-2xl w-full p-8 rounded-sm border-2 border-[#1A2B4C] relative">
+      <div className="ledger-paper max-w-2xl w-full p-8 rounded-sm border-2 border-[#1A2B4C] relative max-h-[90vh] overflow-y-auto">
         
         {/* Close Button */}
         <button
@@ -66,7 +66,7 @@ Neha Verma, 1499, cart_abandoned, null, 8`;
               DATA SUCCESSFULLY INGESTED
             </h4>
             
-            <div className="grid grid-cols-3 gap-3 font-mono text-xs my-4">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 font-mono text-xs my-4">
               <div className="bg-[#FFFDF8] p-3 rounded-sm border border-[#E2D9C8]">
                 <span className="text-[#5A6578] block">RECORDS FOUND</span>
                 <span className="font-bold text-lg text-[#0F2042]">{result.recordsFound}</span>

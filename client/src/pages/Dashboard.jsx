@@ -53,7 +53,7 @@ export const Dashboard = ({ onSelectCase, onNavigate }) => {
             <div className="text-[#D9383A] font-mono text-sm uppercase font-bold tracking-wider mb-2">
               TOTAL REVENUE RECOVERED BY AGENT
             </div>
-            <div className="font-mono text-5xl md:text-6xl font-extrabold text-[#0F2042] tracking-tight">
+            <div className="font-mono text-3xl sm:text-5xl md:text-6xl font-extrabold text-[#0F2042] tracking-tight">
               {formatINR(metrics?.totalRecoveredAmount)}
             </div>
             <p className="font-serif italic text-sm text-[#1A2B4C] mt-2">
