@@ -21,6 +21,7 @@ const revenueEventSchema = new mongoose.Schema({
   failureReason: { type: String, default: null }, // e.g. "insufficient_balance", "bank_timeout", "card_expired", "otp_failed"
   dueDate: { type: Date, default: null },
   ageInHours: { type: Number, default: 0 },
+  razorpayOrderId: { type: String, default: null },
   status: {
     type: String,
     enum: ['open', 'recovered', 'escalated', 'stopped'],

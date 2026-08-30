@@ -67,6 +67,18 @@ const startServer = async () => {
     const llmInfo = getLLMProviderInfo();
     console.log(`[CONFIG] LLM Provider: ${llmInfo.name}${llmInfo.model ? ` (Model: ${llmInfo.model})` : ''}`);
 
+    const rzpKeyId = process.env.RAZORPAY_KEY_ID || '';
+    const rzpKeySecret = process.env.RAZORPAY_KEY_SECRET || '';
+    const rzpConfigured = Boolean(
+      rzpKeyId && 
+      rzpKeySecret && 
+      rzpKeyId !== 'your_razorpay_test_key_id' && 
+      rzpKeySecret !== 'your_razorpay_test_key_secret'
+    );
+    const keyIdPrefix = rzpKeyId ? `${rzpKeyId.slice(0, 6)}...` : 'NOT_SET';
+    const keySecretPrefix = rzpKeySecret ? `${rzpKeySecret.slice(0, 6)}...` : 'NOT_SET';
+    console.log(`[CONFIG] Razorpay Integration: ${rzpConfigured ? `CONFIGURED (Key ID: ${keyIdPrefix}, Secret: ${keySecretPrefix})` : 'NOT CONFIGURED / PLACEHOLDER'}`);
+
     const smtpUser = process.env.SMTP_USER;
     const smtpPass = process.env.SMTP_PASS;
     const smtpConfigured = Boolean(smtpUser && smtpPass && smtpUser !== 'your_email@gmail.com' && smtpPass !== 'your_gmail_app_password');

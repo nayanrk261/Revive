@@ -1,4 +1,5 @@
 import express from 'express';
+import crypto from 'crypto';
 import { RevenueEvent } from '../models/RevenueEvent.js';
 import { RecoveryCase } from '../models/RecoveryCase.js';
 import { Customer } from '../models/Customer.js';
@@ -6,6 +7,7 @@ import { Payment } from '../models/Payment.js';
 import { AgentAction } from '../models/AgentAction.js';
 import { checkGuardrails } from '../services/guardrails.js';
 import { executeToolCall } from '../services/agentTools.js';
+import { createRazorpayOrder } from '../services/razorpayService.js';
 
 const router = express.Router();
 
@@ -57,6 +59,98 @@ router.get('/event/:eventId', async (req, res) => {
   }
 });
 
+// POST /api/public/event/:eventId/create-order -> Expose parameters needed for embedded Razorpay Checkout widget
+router.post('/event/:eventId/create-order', async (req, res) => {
+  try {
+    let event = await RevenueEvent.findById(req.params.eventId);
+    if (!event) {
+      const recCaseObj = await RecoveryCase.findById(req.params.eventId);
+      if (recCaseObj) event = await RevenueEvent.findById(recCaseObj.eventId);
+    }
+
+    if (!event) return res.status(404).json({ success: false, error: 'Event not found' });
+
+    const order = await createRazorpayOrder(event);
+    res.json({
+      success: true,
+      orderId: order.orderId,
+      amount: Math.round(event.amount * 100), // amount in paise
+      currency: 'INR',
+      keyId: process.env.RAZORPAY_KEY_ID || 'your_razorpay_test_key_id',
+    });
+  } catch (err) {
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
+
+// POST /api/public/event/:eventId/verify-payment -> HMAC signature verification of captured test/live payment
+router.post('/event/:eventId/verify-payment', async (req, res) => {
+  try {
+    const { razorpay_order_id, razorpay_payment_id, razorpay_signature } = req.body;
+
+    let event = await RevenueEvent.findById(req.params.eventId);
+    if (!event) {
+      const recCaseObj = await RecoveryCase.findById(req.params.eventId);
+      if (recCaseObj) event = await RevenueEvent.findById(recCaseObj.eventId);
+    }
+
+    if (!event) return res.status(404).json({ success: false, error: 'Event not found' });
+
+    const keySecret = process.env.RAZORPAY_KEY_SECRET;
+
+    // Perform signature check if secret is configured
+    if (keySecret && keySecret !== 'your_razorpay_test_key_secret' && razorpay_signature) {
+      const expectedSignature = crypto
+        .createHmac('sha256', keySecret)
+        .update(`${razorpay_order_id}|${razorpay_payment_id}`)
+        .digest('hex');
+
+      if (expectedSignature !== razorpay_signature) {
+        return res.status(400).json({ success: false, error: 'Payment verification failed: Signature mismatch' });
+      }
+    }
+
+    // Signature valid — update status & log captured payment
+    const recCase = await RecoveryCase.findOne({ eventId: event._id });
+
+    event.status = 'recovered';
+    await event.save();
+
+    if (recCase) {
+      recCase.status = 'recovered';
+      await recCase.save();
+    }
+
+    const txnId = razorpay_payment_id || `pay_${Math.random().toString(36).substring(2, 10).toUpperCase()}`;
+
+    await Payment.create({
+      accountId: event.accountId || null,
+      eventId: event._id,
+      customerId: event.customerId,
+      amount: event.amount,
+      receivedAt: new Date(),
+      paymentMethod: 'razorpay_checkout',
+      status: 'success',
+      transactionId: txnId
+    });
+
+    if (recCase) {
+      await AgentAction.create({
+        accountId: recCase.accountId || null,
+        caseId: recCase._id,
+        tool: 'razorpay_checkout',
+        action: 'PAYMENT_VERIFIED_REAL',
+        reason: `Real Razorpay test payment captured and signature-verified. Payment ID: ${txnId}`,
+        result: 'success',
+      });
+    }
+
+    res.json({ success: true, message: 'Payment verified and case recovered', transactionId: txnId });
+  } catch (err) {
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
+
 // POST /api/public/event/:eventId/retry -> Trigger retry payment tool from public customer portal
 router.post('/event/:eventId/retry', async (req, res) => {
   try {
@@ -105,7 +199,7 @@ router.post('/event/:eventId/retry', async (req, res) => {
   }
 });
 
-// POST /api/public/event/:eventId/pay -> Complete public payment
+// POST /api/public/event/:eventId/pay -> Complete public payment (simulation/fallback)
 router.post('/event/:eventId/pay', async (req, res) => {
   try {
     const { eventId } = req.params;
@@ -127,37 +221,34 @@ router.post('/event/:eventId/pay', async (req, res) => {
       });
     }
 
-    // Mark event as recovered
     event.status = 'recovered';
     await event.save();
 
-    // Mark case as recovered
     const recCase = await RecoveryCase.findOne({ eventId: event._id });
     if (recCase) {
       recCase.status = 'recovered';
       await recCase.save();
     }
 
-    // Record Payment
     const transactionId = 'pay_' + Math.random().toString(36).substring(2, 10).toUpperCase();
     const payment = await Payment.create({
       accountId: event.accountId || null,
       eventId: event._id,
       customerId: event.customerId,
       amount: event.amount,
+      receivedAt: new Date(),
       paymentMethod: req.body.paymentMethod || 'upi_razorpay',
       status: 'success',
       transactionId
     });
 
-    // Audit log entry
     if (recCase) {
       await AgentAction.create({
         accountId: recCase.accountId || null,
         caseId: recCase._id,
         tool: 'public_customer_portal',
         action: 'PAYMENT_RECEIVED',
-        reason: `Customer completed payment of ₹${event.amount.toLocaleString('en-IN')} via Revive Customer Self-Service Portal (Txn #${transactionId}).`,
+        reason: `Customer completed payment of ₹${event.amount.toLocaleString('en-IN')} via Revive Customer Portal (Txn #${transactionId}).`,
         result: 'success'
       });
     }

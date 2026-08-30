@@ -4,7 +4,7 @@ import { MongoMemoryServer } from 'mongodb-memory-server';
 let mongoMemoryServer = null;
 
 export const connectDB = async () => {
-  const primaryUri = process.env.MONGODB_URI || 'mongodb://127.0.0.1:27017/wapas';
+  const primaryUri = process.env.MONGO_URI || process.env.MONGODB_URI || 'mongodb://127.0.0.1:27017/revive';
 
   try {
     mongoose.set('strictQuery', false);

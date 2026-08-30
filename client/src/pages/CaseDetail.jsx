@@ -13,6 +13,7 @@ export const CaseDetail = ({ caseId, onBack }) => {
   const [executing, setExecuting] = useState(false);
   const [paying, setPaying] = useState(false);
   const [escalating, setEscalating] = useState(false);
+  const [copiedLink, setCopiedLink] = useState(false);
   const [guardrailAlert, setGuardrailAlert] = useState(null);
   const [selectedChannel, setSelectedChannel] = useState('');
 
@@ -100,6 +101,42 @@ export const CaseDetail = ({ caseId, onBack }) => {
     }
   };
 
+  const handleCopyPaymentLink = () => {
+    const evObj = caseData?.eventId || {};
+    const eventId = evObj._id || evObj.id || (typeof caseData?.eventId === 'string' ? caseData.eventId : caseData?.eventId?._id);
+    const link = `${window.location.origin}/pay/${eventId}`;
+    
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(link).then(() => {
+        setCopiedLink(true);
+        setTimeout(() => setCopiedLink(false), 2500);
+      }).catch(() => {
+        fallbackCopyText(link);
+      });
+    } else {
+      fallbackCopyText(link);
+    }
+  };
+
+  const fallbackCopyText = (text) => {
+    const textArea = document.createElement('textarea');
+    textArea.value = text;
+    textArea.style.position = 'fixed';
+    textArea.style.left = '-999999px';
+    document.body.appendChild(textArea);
+    textArea.focus();
+    textArea.select();
+    try {
+      document.execCommand('copy');
+      setCopiedLink(true);
+      setTimeout(() => setCopiedLink(false), 2500);
+    } catch (err) {
+      console.error('Failed to copy text:', err);
+      alert('Payment Link: ' + text);
+    }
+    document.body.removeChild(textArea);
+  };
+
   if (loading) {
     return (
       <div className="p-12 text-center font-mono text-[#5A6578]">
@@ -147,10 +184,37 @@ export const CaseDetail = ({ caseId, onBack }) => {
             <h2 className="font-serif font-extrabold text-2xl text-[#0F2042]">
               {customer.name}
             </h2>
-            <div className="font-mono text-xs text-[#5A6578] flex items-center space-x-3 mt-1">
+            <div className="font-mono text-xs text-[#5A6578] flex flex-wrap items-center gap-3 mt-1">
               <span>Phone: {customer.phone}</span>
               <span>·</span>
               <span>Email: {customer.email}</span>
+            </div>
+            <div className="mt-3 flex flex-wrap items-center gap-2">
+              <span className="font-mono text-[11px] font-bold text-[#5A6578] uppercase">Payment URL:</span>
+              <code className="font-mono text-xs bg-[#F8F4EA] border border-[#E2D9C8] px-2 py-1 rounded-sm text-[#1A2B4C] select-all">
+                {window.location.origin}/pay/{ev._id || ev.id || caseData.eventId}
+              </code>
+              <button
+                onClick={handleCopyPaymentLink}
+                className="font-mono text-xs px-3 py-1 bg-[#1A2B4C] text-white hover:bg-[#0F2042] rounded-sm font-bold transition-all flex items-center gap-1.5 shadow-sm"
+                title="Copy Customer Payment Portal URL"
+              >
+                {copiedLink ? (
+                  <>
+                    <svg className="w-3.5 h-3.5 text-[#4ade80]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M5 13l4 4L19 7" />
+                    </svg>
+                    <span>COPIED!</span>
+                  </>
+                ) : (
+                  <>
+                    <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                    </svg>
+                    <span>COPY PAYMENT LINK</span>
+                  </>
+                )}
+              </button>
             </div>
           </div>
 
@@ -274,6 +338,16 @@ export const CaseDetail = ({ caseId, onBack }) => {
             className="font-mono text-xs px-4 py-2.5 border-2 border-[#D9383A] bg-[#D9383A] text-white hover:bg-[#B82525] disabled:opacity-50 rounded-sm font-bold transition-all"
           >
             <span>{executing ? 'EXECUTING...' : 'EXECUTE RECOMMENDED ACTION'}</span>
+          </button>
+
+          <button
+            onClick={handleCopyPaymentLink}
+            className="font-mono text-xs px-4 py-2.5 border-2 border-[#1A2B4C] bg-[#FFFDF8] text-[#1A2B4C] hover:bg-[#1A2B4C] hover:text-white rounded-sm font-bold transition-all flex items-center gap-2"
+          >
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+            </svg>
+            <span>{copiedLink ? 'LINK COPIED TO CLIPBOARD!' : 'COPY PAYMENT LINK'}</span>
           </button>
 
           <button

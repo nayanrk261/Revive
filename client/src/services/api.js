@@ -114,3 +114,14 @@ export const completePublicPayment = async (eventId, paymentMethod = 'upi_razorp
   return res.data;
 };
 
+export const createPublicRazorpayOrder = async (eventId) => {
+  const res = await axios.post(`${API_BASE}/public/event/${eventId}/create-order`);
+  return res.data;
+};
+
+export const verifyPublicRazorpayPayment = async (eventId, payload) => {
+  const res = await axios.post(`${API_BASE}/public/event/${eventId}/verify-payment`, payload);
+  return res.data;
+};
+
+
