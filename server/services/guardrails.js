@@ -6,8 +6,12 @@ import { AgentAction } from '../models/AgentAction.js';
  * Enforces business rules & stopping rules BEFORE action execution.
  */
 export const checkGuardrails = async (recCase, event, customer, proposedAction) => {
-  const currentHour = new Date().getHours();
-  // Quiet hours check: 8am - 9pm allowed (8 to 21)
+  // Use IST explicitly so quiet-hours work correctly on UTC servers (e.g. Render)
+  const currentHour = parseInt(
+    new Date().toLocaleString('en-US', { hour: 'numeric', hour12: false, timeZone: 'Asia/Kolkata' }),
+    10
+  );
+  // Quiet hours check: 8am - 9pm IST allowed (8 to 21)
   const isQuietHours = currentHour < 8 || currentHour >= 21;
 
   // 1. Payment check: Stop immediately if payment received
